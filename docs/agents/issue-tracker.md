@@ -35,4 +35,5 @@ gh issue create --title "<タイトル>" --label task --body-file <本文のフ�
 ## PR
 
 - 本文の先頭に `Closes #<番号>` を書き、対応する Issue をつなぐ
-- タイトルはコミットメッセージの決まり (CONTRIBUTING.md) に合わせる。squash マージでそのまま main のコミットメッセージになる
+- タイトルはコミットメッセージの決まり (CONTRIBUTING.md) に合わせる。merge commit のメッセージになる
+- PR の中の各コミットもそのまま main の履歴に残るので、どれも決まりに合わせる
