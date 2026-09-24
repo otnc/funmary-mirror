@@ -10,3 +10,4 @@ LICENSE-*
 **/coverage/
 **/playwright-report/
 **/test-results/
+**/fixtures/
