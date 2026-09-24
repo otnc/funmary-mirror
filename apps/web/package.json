@@ -1,0 +1,25 @@
+{
+	"name": "@funmary/web",
+	"private": true,
+	"type": "module",
+	"description": "Funmary の画面 (SvelteKit)",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo \"svelte-kit sync をスキップしました\"",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+		"test:e2e": "playwright test"
+	},
+	"devDependencies": {
+		"@funmary/core": "workspace:*",
+		"@playwright/test": "catalog:",
+		"@sveltejs/adapter-node": "catalog:",
+		"@sveltejs/kit": "catalog:",
+		"@sveltejs/vite-plugin-svelte": "catalog:",
+		"svelte": "catalog:",
+		"svelte-check": "catalog:",
+		"vite": "catalog:"
+	}
+}

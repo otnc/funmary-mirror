@@ -1,0 +1,59 @@
+{
+	"name": "funmary",
+	"private": true,
+	"type": "module",
+	"description": "公立はこだて未来大学の学生向けの便利な総合 Web アプリ (非公式)",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/oto-lab/funmary.git"
+	},
+	"packageManager": "pnpm@11.22.0",
+	"engines": {
+		"node": ">=24 <25"
+	},
+	"scripts": {
+		"dev": "pnpm --filter @funmary/web dev",
+		"build": "pnpm --filter @funmary/web build && node scripts/check-bundle-size.ts",
+		"preview": "pnpm --filter @funmary/web preview",
+		"lint": "eslint .",
+		"format": "prettier --write .",
+		"format:check": "prettier --check .",
+		"typecheck": "tsc --noEmit && pnpm --filter @funmary/web check",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:e2e": "pnpm --filter @funmary/web test:e2e",
+		"prepare": "simple-git-hooks"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "catalog:",
+		"@commitlint/config-conventional": "catalog:",
+		"@eslint/js": "catalog:",
+		"@types/node": "catalog:",
+		"@typescript/native": "npm:typescript@^7.0.2",
+		"eslint": "catalog:",
+		"eslint-config-prettier": "catalog:",
+		"eslint-plugin-svelte": "catalog:",
+		"globals": "catalog:",
+		"lint-staged": "catalog:",
+		"prettier": "catalog:",
+		"prettier-plugin-svelte": "catalog:",
+		"simple-git-hooks": "catalog:",
+		"svelte": "catalog:",
+		"svelte-eslint-parser": "catalog:",
+		"typescript": "npm:@typescript/typescript6@^6.0.2",
+		"typescript-eslint": "catalog:",
+		"vitest": "catalog:"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm exec lint-staged",
+		"commit-msg": "pnpm exec commitlint --edit \"$1\""
+	},
+	"lint-staged": {
+		"*.{js,ts,svelte}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,json5,md,yml,yaml,css,html}": "prettier --write"
+	}
+}

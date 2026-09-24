@@ -1,0 +1,10 @@
+{
+	"name": "@funmary/core",
+	"private": true,
+	"type": "module",
+	"description": "I/O を持たない処理 (時間割の展開、差分、ICS の生成、祝日と学期の判定)",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	}
+}

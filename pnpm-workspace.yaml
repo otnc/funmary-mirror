@@ -1,0 +1,36 @@
+packages:
+  - apps/*
+  - packages/*
+
+# 複数のパッケージで使う依存の版は、ここで 1 か所にまとめる。各 package.json では "catalog:" と書く
+catalog:
+  '@commitlint/cli': ^21.2.3
+  '@commitlint/config-conventional': ^21.2.3
+  '@eslint/js': ^10.0.1
+  '@playwright/test': ^1.63.0
+  '@sveltejs/adapter-node': ^5.5.7
+  '@sveltejs/kit': ^2.70.3
+  '@sveltejs/vite-plugin-svelte': ^7.3.1
+  '@types/node': ^24.13.6
+  eslint: ^10.11.0
+  eslint-config-prettier: ^10.1.8
+  eslint-plugin-svelte: ^3.23.0
+  globals: ^17.12.0
+  lint-staged: ^17.5.1
+  prettier: ^3.9.9
+  prettier-plugin-svelte: ^4.1.1
+  simple-git-hooks: ^2.14.0
+  svelte: ^5.57.1
+  svelte-check: ^4.7.6
+  svelte-eslint-parser: ^1.8.1
+  typescript-eslint: ^8.70.1
+  vite: ^8.3.1
+  vitest: ^5.0.1
+
+# 依存のインストール時スクリプトは、ここで許可したものだけを動かす
+allowBuilds:
+  esbuild: true
+  simple-git-hooks: true
+
+minimumReleaseAgeExclude:
+  - vite@8.3.1

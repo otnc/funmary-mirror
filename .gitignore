@@ -1,0 +1,45 @@
+# 依存
+node_modules/
+
+# ビルドの出力
+build/
+dist/
+.svelte-kit/
+*.tsbuildinfo
+
+# テストの出力
+coverage/
+test-results/
+playwright-report/
+blob-report/
+
+# 環境変数 (秘密情報を含む)
+.env
+.env.*
+!.env.example
+
+# 手元のデータ (DB、バックアップ、取得した HTML)
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# 公開しない資料
+.private/
+
+# AI エージェントの手元の設定。公開するのは .agents/skills だけ
+.claude/
+.agent/
+.agents/*
+!.agents/skills/
+
+# エディタと OS
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# ログ
+*.log

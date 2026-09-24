@@ -1,0 +1,76 @@
+// 依存の更新の方針は CONTRIBUTING.md の "依存の更新" を参照
+{
+	$schema: 'https://docs.renovatebot.com/renovate-schema.json',
+	extends: ['config:recommended', 'helpers:pinGitHubActionDigests', ':timezone(Asia/Tokyo)'],
+
+	// 第 1 と第 3 月曜の 10 時台 (日本時間)。Renovate は日付と曜日の条件を両方満たす日だけを選ぶ
+	schedule: ['* 10 1-7,15-21 * 1'],
+	// 公開から 3 日たっていない版は取り込まない
+	minimumReleaseAge: '3 days',
+	lockFileMaintenance: {
+		enabled: true,
+		automerge: true,
+		schedule: ['* 10 1-7,15-21 * 1'],
+		commitMessageAction: 'lockfile を更新',
+		commitMessageTopic: '',
+		commitMessageExtra: '',
+	},
+	vulnerabilityAlerts: {
+		schedule: ['at any time'],
+	},
+
+	labels: ['dependencies'],
+	dependencyDashboardTitle: '依存の更新の一覧 (Dependency Dashboard)',
+
+	// コミットメッセージと PR のタイトルを日本語にする。例: "chore(deps): 依存を更新: svelte → ^5.58.0"
+	commitMessageAction: '依存を更新:',
+	commitMessageTopic: '{{depName}}',
+	commitMessageExtra: '→ {{#if newValue}}{{{newValue}}}{{else}}{{{newDigestShort}}}{{/if}}',
+
+	customManagers: [
+		{
+			// ワークフローの run に書いた gitleaks の Docker イメージの版も更新する
+			customType: 'regex',
+			managerFilePatterns: ['/^\\.github/workflows/.+\\.ya?ml$/'],
+			matchStrings: ['ghcr\\.io/gitleaks/gitleaks:(?<currentValue>v[\\d.]+)'],
+			depNameTemplate: 'ghcr.io/gitleaks/gitleaks',
+			datasourceTemplate: 'docker',
+		},
+	],
+
+	packageRules: [
+		{
+			// パッチとマイナーは 1 つの PR にまとめ、CI が通れば自動でマージする
+			matchUpdateTypes: ['minor', 'patch', 'digest'],
+			groupName: 'パッチとマイナー',
+			groupSlug: 'non-major',
+			commitMessageTopic: 'パッチとマイナー',
+			commitMessageExtra: '',
+			automerge: true,
+		},
+		{
+			// SMUI は版をそろえて使う
+			matchPackageNames: ['@smui/**', '@smui-extra/**', 'smui-theme'],
+			groupName: 'SMUI',
+			groupSlug: 'smui',
+			commitMessageTopic: 'SMUI',
+			commitMessageExtra: '',
+		},
+		{
+			// Node.js は 24 系 (LTS) から上げない
+			matchDepNames: ['node'],
+			matchUpdateTypes: ['major'],
+			enabled: false,
+		},
+		{
+			matchPackageNames: ['@types/node'],
+			allowedVersions: '24.x',
+		},
+		{
+			// メジャーの更新は変更点を読んでから手でマージする
+			matchUpdateTypes: ['major'],
+			automerge: false,
+			labels: ['dependencies', 'major'],
+		},
+	],
+}

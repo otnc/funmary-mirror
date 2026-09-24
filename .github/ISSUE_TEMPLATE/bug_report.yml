@@ -1,0 +1,40 @@
+name: 不具合の報告
+description: 動きがおかしい、表示が崩れる、エラーが出るなど
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        報告ありがとうございます。セキュリティ上の問題は、この Issue ではなく SECURITY.md の方法で知らせてください。
+        学籍番号、パスワード、カレンダーやフィードの URL などの個人情報は書かないでください。
+  - type: textarea
+    id: what
+    attributes:
+      label: 起きたこと
+      description: 何をしたときに、何が起きたか
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待していた動き
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現の手順
+      placeholder: |
+        1. 週の時間割を開く
+        2. 3 限の授業を押す
+        3. ...
+  - type: input
+    id: environment
+    attributes:
+      label: 使った環境
+      placeholder: 例 iPhone 15 の Safari、Windows 11 の Chrome
+  - type: textarea
+    id: extra
+    attributes:
+      label: 補足
+      description: スクリーンショット (個人情報は伏せる) やエラーの文言など
