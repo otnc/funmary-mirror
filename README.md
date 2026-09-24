@@ -51,6 +51,14 @@ funmary/
 
 `packages/` には、今後 `db`、`auth`、`api`、`sources`、`notify`、`jobs` を足していきます。
 
+## 著者
+
+otoneko. a.k.a. marron. https://github.com/otnc
+
+## 貢献者
+
+[![貢献者の一覧](https://contrib.rocks/image?repo=oto-lab/funmary)](https://github.com/oto-lab/funmary/graphs/contributors)
+
 ## ライセンス
 
 Funmary のコードは、次の 2 つのライセンスのどちらかを選んで使えます (デュアルライセンス。SPDX の式では `BSD-3-Clause OR Apache-2.0`)。
