@@ -35,6 +35,8 @@ Funmary は開発を始めたばかりで、まだ使える機能はありませ
 
 手元で動かす手順と、コミットメッセージやブランチの決まりは [CONTRIBUTING.md](CONTRIBUTING.md) にあります。AI エージェントで開発するときの指示は [AGENTS.md](AGENTS.md) にあります。
 
+開発は [oto-lab/funmary](https://github.com/oto-lab/funmary) で行っています。[otnc/funmary-mirror](https://github.com/otnc/funmary-mirror) は自動で複製しているミラーなので、Issue と PR は oto-lab/funmary に送ってください。
+
 セキュリティ上の問題を見つけたときは、公開の Issue にせず、[SECURITY.md](SECURITY.md) の方法で知らせてください。
 
 ## ディレクトリ構成
