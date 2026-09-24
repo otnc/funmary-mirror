@@ -1,4 +1,5 @@
 pnpm-lock.yaml
+packages/db/migrations/
 skills-lock.json
 LICENSE-*
 .agents/

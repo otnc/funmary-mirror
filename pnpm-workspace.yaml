@@ -29,6 +29,8 @@ catalog:
 
 # 依存のインストール時スクリプトは、ここで許可したものだけを動かす
 allowBuilds:
+  # better-sqlite3 は各 OS 向けのビルド済みのファイルを同梱している。ソースからのビルド (node-gyp) は動かさない
+  better-sqlite3: false
   esbuild: true
   simple-git-hooks: true
 

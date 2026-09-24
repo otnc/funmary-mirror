@@ -1,0 +1,21 @@
+{
+	"name": "@funmary/db",
+	"private": true,
+	"type": "module",
+	"description": "DB のスキーマ、マイグレーション、暗号化とトークンの処理",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"generate": "drizzle-kit generate"
+	},
+	"dependencies": {
+		"better-sqlite3": "^13.0.3",
+		"drizzle-orm": "^0.45.3"
+	},
+	"devDependencies": {
+		"@types/better-sqlite3": "^9.6.0",
+		"drizzle-kit": "^0.31.11"
+	}
+}
