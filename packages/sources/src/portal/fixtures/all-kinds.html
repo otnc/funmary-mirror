@@ -1,0 +1,84 @@
+<!doctype html>
+<!-- 休講、補講、教室変更の 3 種類がそろった画面。補講と教室変更の表は実物を確かめられていないので、休講の表の形をもとに作った架空のもの。列の順番の入れ替え、列名の余分な空白、知らない列、閉じタグの抜けも含める。整形すると崩れた部分が直ってしまうので、Prettier の対象から外している -->
+<html lang="ja">
+<head><meta charset="utf-8"><title>休講・補講</title></head>
+<body>
+<main class="mdl-layout__content">
+  <div class="mdl-card">
+    <div class="mdl-card__supporting-text">
+      <h4 id="cancel-lecture-information">休講情報</h4>
+      <div class="horizontal-scrollable"><div>
+        <table id="MainContent_MainContent_CancelLectureGridView">
+          <tbody>
+            <tr><th>曜日</th><th>日付</th><th> 時 限 </th><th>授業名</th><th>キャンパス</th><th>代表教職員</th><th>休講コメント</th><th>備考</th></tr>
+            <tr>
+              <td data-col-responsive-title="曜日">月</td>
+              <td data-col-responsive-title="日付">01/18</td>
+              <td data-col-responsive-title=" 時 限 ">２時限</td>
+              <td data-col-responsive-title="授業名">情報処理演習Ⅰ</td>
+              <td data-col-responsive-title="キャンパス">本学</td>
+              <td data-col-responsive-title="代表教職員">架空　花子</td>
+              <td data-col-responsive-title="休講コメント">補講あり 日時は後日連絡</td>
+              <td data-col-responsive-title="備考">知らない列</td>
+            </tr>
+            <tr>
+              <td data-col-responsive-title="曜日">火
+              <td data-col-responsive-title="日付">04/07
+              <td data-col-responsive-title=" 時 限 ">1時限
+              <td data-col-responsive-title="授業名">英語 I
+              <td data-col-responsive-title="キャンパス">本学
+              <td data-col-responsive-title="代表教職員">
+              <td data-col-responsive-title="休講コメント">
+              <td data-col-responsive-title="備考">
+          </tbody>
+        </table>
+      </div></div>
+    </div>
+  </div>
+  <div class="mdl-card">
+    <div class="mdl-card__supporting-text">
+      <h4 id="sup-lecture-information">補講情報</h4>
+      <div class="horizontal-scrollable"><div>
+        <table id="MainContent_MainContent_SupLectureGridView">
+          <tbody>
+            <tr><th>日付</th><th>曜日</th><th>時限</th><th>授業名</th><th>キャンパス</th><th>教室名</th><th>代表教職員</th><th>補講コメント</th></tr>
+            <tr>
+              <td data-col-responsive-title="日付">01/23</td>
+              <td data-col-responsive-title="曜日">土</td>
+              <td data-col-responsive-title="時限">3時限</td>
+              <td data-col-responsive-title="授業名">情報処理演習Ⅰ</td>
+              <td data-col-responsive-title="キャンパス">本学</td>
+              <td data-col-responsive-title="教室名">R791</td>
+              <td data-col-responsive-title="代表教職員">架空　花子</td>
+              <td data-col-responsive-title="補講コメント"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div></div>
+    </div>
+  </div>
+  <div class="mdl-card">
+    <div class="mdl-card__supporting-text">
+      <h4 id="classroom-exchanged-lecture-information">教室変更情報</h4>
+      <div class="horizontal-scrollable"><div>
+        <table id="MainContent_MainContent_ClassroomExchangedLectureGridView">
+          <tbody>
+            <tr><th>日付</th><th>曜日</th><th>時限</th><th>授業名</th><th>キャンパス</th><th>代表教職員</th><th>移動元</th><th>移動先</th></tr>
+            <tr>
+              <td data-col-responsive-title="日付">10/02</td>
+              <td data-col-responsive-title="曜日">金</td>
+              <td data-col-responsive-title="時限">4時限</td>
+              <td data-col-responsive-title="授業名">線形代数学</td>
+              <td data-col-responsive-title="キャンパス">本学</td>
+              <td data-col-responsive-title="代表教職員">架空　次郎</td>
+              <td data-col-responsive-title="移動元">484</td>
+              <td data-col-responsive-title="移動先">講堂</td>
+            </tr>
+          </tbody>
+        </table>
+      </div></div>
+    </div>
+  </div>
+</main>
+</body>
+</html>
