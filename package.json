@@ -16,7 +16,7 @@
 		"dev": "pnpm --filter @funmary/web dev",
 		"build": "pnpm --filter @funmary/web build && node scripts/check-bundle-size.ts",
 		"preview": "pnpm --filter @funmary/web preview",
-		"funmary": "node apps/web/src/cli.ts",
+		"funmary-admin": "node apps/web/src/cli.ts",
 		"lint": "eslint .",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",

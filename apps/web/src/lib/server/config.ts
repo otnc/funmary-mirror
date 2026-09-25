@@ -134,7 +134,7 @@ function origin(mode: Mode) {
 	);
 }
 
-const BY_INIT = 'pnpm funmary init (本番では funmary init) で作れます';
+const BY_INIT = 'pnpm funmary-admin init (本番では funmary-admin init) で作れます';
 
 function envSchema(mode: Mode) {
 	return v.object({

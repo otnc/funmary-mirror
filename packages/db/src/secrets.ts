@@ -51,7 +51,7 @@ export function createSecretBox(keyBase64: string): SecretBox {
 	};
 }
 
-/** 暗号化の鍵を作る。`funmary init` が使う */
+/** 暗号化の鍵を作る。`funmary-admin init` が使う */
 export function generateEncryptionKey(): string {
 	return randomBytes(KEY_BYTES).toString('base64');
 }

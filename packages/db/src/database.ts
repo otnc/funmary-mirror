@@ -82,7 +82,7 @@ function checkIntegrity(sqlite: BetterSqlite3.Database, path: string, backupDir:
 
 function corrupted(path: string, backupDir: string, cause: unknown): DatabaseCorruptedError {
 	return new DatabaseCorruptedError(
-		`DB (${path}) が壊れているので起動を止めます。${backupDir} のバックアップから戻してください: funmary restore <ファイル>`,
+		`DB (${path}) が壊れているので起動を止めます。${backupDir} のバックアップから戻してください: funmary-admin restore <ファイル>`,
 		{ cause },
 	);
 }

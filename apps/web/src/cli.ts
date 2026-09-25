@@ -1,4 +1,4 @@
-// 管理用コマンド。手元では pnpm funmary <コマンド>、本番では funmary <コマンド> で使う (設計書 19.4)。
+// 管理用コマンド。手元では pnpm funmary-admin <コマンド>、本番では funmary-admin <コマンド> で使う (設計書 19.4)。
 // 秘密の値は画面に出さない。出すのは変数の名前だけにする。
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -69,7 +69,7 @@ const migrate = defineCommand({
 });
 
 const main = defineCommand({
-	meta: { name: 'funmary', description: 'Funmary の管理用コマンド' },
+	meta: { name: 'funmary-admin', description: 'Funmary の管理用コマンド' },
 	subCommands: { init, migrate },
 });
 
