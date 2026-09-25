@@ -114,6 +114,22 @@ describe('parseConfig', () => {
 		});
 	});
 
+	it('本番の公開 URL は https:// に限る。手元で本番の形を試す localhost だけは http:// も許す', () => {
+		const originIssues = (origin: string) => {
+			const result = parseConfig({
+				...developmentEnv(),
+				NODE_ENV: 'production',
+				ORIGIN: origin,
+				PORTAL_USER_ID: 'student',
+				PORTAL_PASSWORD: 'password',
+			});
+			return result.ok ? [] : result.issues.map((issue) => issue.name);
+		};
+		expect(originIssues('http://funmary.example.com')).toEqual(['ORIGIN']);
+		expect(originIssues('http://localhost:4173')).toEqual([]);
+		expect(originIssues('http://127.0.0.1:4173')).toEqual([]);
+	});
+
 	it('公開 URL とポータルのアカウントは、本番でだけ求める', () => {
 		const production = parseConfig({ ...developmentEnv(), NODE_ENV: 'production' });
 		expect(production.ok ? [] : production.issues.map((issue) => issue.name).toSorted()).toEqual([

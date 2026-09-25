@@ -1,0 +1,13 @@
+{
+	"name": "@funmary/api",
+	"private": true,
+	"type": "module",
+	"description": "機械向けの口 (Hono のアプリ)",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"hono": "^4.13.9"
+	}
+}

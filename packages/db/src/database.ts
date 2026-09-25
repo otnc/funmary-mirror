@@ -116,3 +116,16 @@ function backup(sqlite: BetterSqlite3.Database, backupDir: string, now: Date): v
 	// VACUUM INTO は、書き込み中の DB からも一貫した複製を同期的に作れる
 	sqlite.prepare('VACUUM INTO ?').run(join(backupDir, `before-migration-${stamp}.db`));
 }
+
+/**
+ * DB に読み書きできるかを確かめる (/healthz が使う)。
+ * 書き込みの権利を取ってすぐ手放すので、データは変えない。閉じた DB やディスクの不調では false を返す。
+ */
+export function checkHealth(database: Database): boolean {
+	try {
+		database.sqlite.exec('BEGIN IMMEDIATE; ROLLBACK;');
+		return true;
+	} catch {
+		return false;
+	}
+}

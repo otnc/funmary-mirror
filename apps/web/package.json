@@ -6,13 +6,14 @@
 	"license": "(BSD-3-Clause OR Apache-2.0)",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "vite build && node scripts/copy-migrations.ts",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo \"svelte-kit sync をスキップしました\"",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
 		"test:e2e": "playwright test"
 	},
 	"devDependencies": {
+		"@funmary/api": "workspace:*",
 		"@funmary/core": "workspace:*",
 		"@funmary/db": "workspace:*",
 		"@playwright/test": "catalog:",
@@ -24,5 +25,8 @@
 		"svelte-check": "catalog:",
 		"valibot": "catalog:",
 		"vite": "catalog:"
+	},
+	"dependencies": {
+		"better-sqlite3": "catalog:"
 	}
 }

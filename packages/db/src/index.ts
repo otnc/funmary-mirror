@@ -1,4 +1,5 @@
 export {
+	checkHealth,
 	DatabaseCorruptedError,
 	MigrationFailedError,
 	openDatabase,

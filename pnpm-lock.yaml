@@ -30,6 +30,9 @@ catalogs:
     '@types/node':
       specifier: ^24.13.6
       version: 24.13.6
+    better-sqlite3:
+      specifier: ^13.0.3
+      version: 13.0.3
     eslint:
       specifier: ^10.11.0
       version: 10.11.0
@@ -139,7 +142,14 @@ importers:
         version: 5.0.1(@types/node@24.13.6)(vite@8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.6.1)(tsx@4.23.15)(yaml@2.9.1))
 
   apps/web:
+    dependencies:
+      better-sqlite3:
+        specifier: 'catalog:'
+        version: 13.0.3
     devDependencies:
+      '@funmary/api':
+        specifier: workspace:*
+        version: link:../../packages/api
       '@funmary/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -174,12 +184,18 @@ importers:
         specifier: 'catalog:'
         version: 8.3.1(@types/node@24.13.6)(esbuild@0.28.2)(jiti@2.6.1)(tsx@4.23.15)(yaml@2.9.1)
 
+  packages/api:
+    dependencies:
+      hono:
+        specifier: ^4.13.9
+        version: 4.13.9
+
   packages/core: {}
 
   packages/db:
     dependencies:
       better-sqlite3:
-        specifier: ^13.0.3
+        specifier: 'catalog:'
         version: 13.0.3
       drizzle-orm:
         specifier: ^0.45.3
@@ -1958,6 +1974,10 @@ packages:
 
   hastscript@9.0.1:
     resolution: {integrity: sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w==}
+
+  hono@4.13.9:
+    resolution: {integrity: sha512-7dMkQmZoC4E6F7AtaQSPhlWAdnBti+j7rreMZl8QB4jFiEhP9TWbGWUMi8WYzBCgmgulxuvLQupKqo+Co6Omyg==}
+    engines: {node: '>=16.9.0'}
 
   hookified@1.15.1:
     resolution: {integrity: sha512-MvG/clsADq1GPM2KGo2nyfaWVyn9naPiXrqIe4jYjXNZQt238kWyOGrsyc/DmRAQ+Re6yeo6yX/yoNCG5KAEVg==}
@@ -4050,6 +4070,8 @@ snapshots:
       hast-util-parse-selector: 4.0.0
       property-information: 7.2.0
       space-separated-tokens: 2.0.2
+
+  hono@4.13.9: {}
 
   hookified@1.15.1: {}
 
