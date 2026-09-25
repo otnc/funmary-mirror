@@ -123,9 +123,13 @@ function origin(mode: Mode) {
 		v.check((value) => {
 			if (!URL.canParse(value)) return false;
 			const url = new URL(value);
-			const protocols = mode === 'production' ? ['https:'] : ['https:', 'http:'];
+			// 本番は https:// だけ。ただし手元で本番の形を試すとき (E2E テストなど) の localhost は http:// も許す
+			const local = url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+			const allowed =
+				url.protocol === 'https:' ||
+				(url.protocol === 'http:' && (mode === 'development' || local));
 			// URL にすると末尾に / が付くので、元の文字列と比べてパスや / の有無を確かめる
-			return protocols.includes(url.protocol) && url.origin === value;
+			return allowed && url.origin === value;
 		}, ORIGIN_HINT),
 	);
 }
