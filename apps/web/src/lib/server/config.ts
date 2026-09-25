@@ -17,7 +17,8 @@ export interface Config {
 	readonly vapid: {
 		readonly publicKey: string;
 		readonly privateKey: string;
-		readonly subject: string;
+		/** プッシュのサービス (Google、Mozilla、Apple) に伝える連絡先。ないときはプッシュ通知を止める */
+		readonly subject: string | undefined;
 	};
 	readonly google: { readonly clientId: string; readonly clientSecret: string };
 	readonly allowedEmailDomains: readonly string[];
@@ -152,11 +153,14 @@ function envSchema(mode: Mode) {
 		),
 		VAPID_PUBLIC_KEY: required(BY_INIT),
 		VAPID_PRIVATE_KEY: required(BY_INIT),
-		VAPID_SUBJECT: v.pipe(
-			required('連絡先を mailto: で書いてください (例: mailto:admin@funmary.example.com)'),
-			v.regex(
-				/^(mailto:|https:\/\/)/,
-				'連絡先を mailto: で書いてください (例: mailto:admin@funmary.example.com)',
+		// 空なら公開 URL (ORIGIN) を使う
+		VAPID_SUBJECT: v.optional(
+			v.pipe(
+				v.string(),
+				v.regex(
+					/^(mailto:|https:\/\/)/,
+					'mailto: のメールアドレスか https:// の URL を書いてください。空なら ORIGIN を使います',
+				),
 			),
 		),
 		GOOGLE_CLIENT_ID: required(
@@ -254,7 +258,7 @@ export function parseConfig(env: Readonly<Record<string, string | undefined>>): 
 			vapid: {
 				publicKey: e.VAPID_PUBLIC_KEY,
 				privateKey: e.VAPID_PRIVATE_KEY,
-				subject: e.VAPID_SUBJECT,
+				subject: e.VAPID_SUBJECT ?? e.ORIGIN,
 			},
 			google: { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET },
 			allowedEmailDomains: e.ALLOWED_EMAIL_DOMAINS,

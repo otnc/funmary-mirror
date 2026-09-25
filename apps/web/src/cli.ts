@@ -51,7 +51,7 @@ const init = defineCommand({
 		// 既存のファイルは上書きしても所有者と権限が変わらない。新しく作るときは自分だけが読めるようにする
 		writeFileSync(args.file, result.text, exists ? {} : { mode: 0o600 });
 		console.log(`${args.file} に次の鍵を書きました: ${result.filled.join(', ')}`);
-		console.log('VAPID_SUBJECT (連絡先の mailto:) と Google の値は、自分で書いてください。');
+		console.log('Google の値は、自分で書いてください。');
 	},
 });
 
