@@ -84,8 +84,34 @@ describe('parseConfig', () => {
 			'SESSION_SECRET',
 			'VAPID_PRIVATE_KEY',
 			'VAPID_PUBLIC_KEY',
-			'VAPID_SUBJECT',
 		]);
+	});
+
+	it('プッシュ通知の連絡先 (VAPID_SUBJECT) が空なら公開 URL を使い、どちらもなければ連絡先なしにする', () => {
+		const subjectOf = (extra: Record<string, string>) => {
+			const result = parseConfig({ ...developmentEnv(), VAPID_SUBJECT: '', ...extra });
+			return result.ok ? result.config.vapid.subject : 'error';
+		};
+		expect(subjectOf({ VAPID_SUBJECT: 'mailto:admin@funmary.example.com' })).toBe(
+			'mailto:admin@funmary.example.com',
+		);
+		expect(subjectOf({ ORIGIN: 'https://funmary.example.com' })).toBe(
+			'https://funmary.example.com',
+		);
+		expect(subjectOf({})).toBeUndefined();
+	});
+
+	it('足りない変数には、どう直すかを日本語で添える', () => {
+		const result = parseConfig({ ...developmentEnv(), GOOGLE_CLIENT_ID: undefined });
+		expect(result).toEqual({
+			ok: false,
+			issues: [
+				{
+					name: 'GOOGLE_CLIENT_ID',
+					message: expect.stringContaining('Google Cloud Console') as string,
+				},
+			],
+		});
 	});
 
 	it('公開 URL とポータルのアカウントは、本番でだけ求める', () => {

@@ -17,7 +17,8 @@ export interface Config {
 	readonly vapid: {
 		readonly publicKey: string;
 		readonly privateKey: string;
-		readonly subject: string;
+		/** プッシュのサービス (Google、Mozilla、Apple) に伝える連絡先。ないときはプッシュ通知を止める */
+		readonly subject: string | undefined;
 	};
 	readonly google: { readonly clientId: string; readonly clientSecret: string };
 	readonly allowedEmailDomains: readonly string[];
@@ -152,11 +153,14 @@ function envSchema(mode: Mode) {
 		),
 		VAPID_PUBLIC_KEY: required(BY_INIT),
 		VAPID_PRIVATE_KEY: required(BY_INIT),
-		VAPID_SUBJECT: v.pipe(
-			required('連絡先を mailto: で書いてください (例: mailto:admin@funmary.example.com)'),
-			v.regex(
-				/^(mailto:|https:\/\/)/,
-				'連絡先を mailto: で書いてください (例: mailto:admin@funmary.example.com)',
+		// 空なら公開 URL (ORIGIN) を使う
+		VAPID_SUBJECT: v.optional(
+			v.pipe(
+				v.string(),
+				v.regex(
+					/^(mailto:|https:\/\/)/,
+					'mailto: のメールアドレスか https:// の URL を書いてください。空なら ORIGIN を使います',
+				),
 			),
 		),
 		GOOGLE_CLIENT_ID: required(
@@ -211,10 +215,16 @@ function envSchema(mode: Mode) {
 export function parseConfig(env: Readonly<Record<string, string | undefined>>): ConfigResult {
 	const mode: Mode = env['NODE_ENV'] === 'production' ? 'production' : 'development';
 	// 空の値は、書かなかったのと同じに扱う。.env.example を丸ごと写しても動くようにするため
-	const present = Object.fromEntries(
-		Object.entries(env).filter(([, value]) => value !== undefined && value.trim() !== ''),
+	// 変数がない場合も、値を undefined にして並べておく。Valibot は、ない変数には既定の英語の説明を付けるが、
+	// undefined の値なら変数ごとに書いた説明を使うため
+	const schema = envSchema(mode);
+	const input = Object.fromEntries(
+		Object.keys(schema.entries).map((name) => {
+			const value = env[name];
+			return [name, value === undefined || value.trim() === '' ? undefined : value];
+		}),
 	);
-	const result = v.safeParse(envSchema(mode), present);
+	const result = v.safeParse(schema, input);
 	const issues: ConfigIssue[] = result.success
 		? []
 		: result.issues.map((issue) => {
@@ -248,7 +258,7 @@ export function parseConfig(env: Readonly<Record<string, string | undefined>>): 
 			vapid: {
 				publicKey: e.VAPID_PUBLIC_KEY,
 				privateKey: e.VAPID_PRIVATE_KEY,
-				subject: e.VAPID_SUBJECT,
+				subject: e.VAPID_SUBJECT ?? e.ORIGIN,
 			},
 			google: { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET },
 			allowedEmailDomains: e.ALLOWED_EMAIL_DOMAINS,
