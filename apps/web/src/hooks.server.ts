@@ -1,9 +1,10 @@
 // サーバーの起動と、リクエストの振り分け (設計書 3.2)。
 // 起動時に設定を検証して DB を開き、機械向けのパスだけを Hono に渡す。
 import { existsSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Handle, ServerInit } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import { createApi } from '@funmary/api';
 import { checkHealth, openDatabase } from '@funmary/db';
@@ -11,6 +12,9 @@ import { parseConfig } from '$lib/server/config.ts';
 
 /** Hono に渡すパス。これ自身か、この下のパスが対象になる */
 const API_PATHS = ['/api', '/auth', '/cal', '/feed', '/healthz', '/mcp'];
+
+/** 開発サーバーで動くときの、リポジトリのルート (このファイルは apps/web/src にある) */
+const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
 let api: ReturnType<typeof createApi> | undefined;
 
@@ -25,10 +29,11 @@ export const init: ServerInit = () => {
 			].join('\n'),
 		);
 	}
-	const { dataDir } = result.config;
+	// 開発サーバーは apps/web で動くが、.env と既定の ./data はリポジトリのルートに置く (管理用コマンドと同じ DB を使う)
+	const dataDir = dev ? resolve(REPO_ROOT, result.config.dataDir) : result.config.dataDir;
 	mkdirSync(dataDir, { recursive: true });
 	// 開くときに、壊れていないかの確認とマイグレーションまで行う。
-	// ビルドしたものでは、vite.config.ts がサーバーの出力の隣に写したマイグレーションを使う
+	// ビルドしたものでは、scripts/copy-migrations.ts がサーバーの出力の隣に写したマイグレーションを使う
 	const bundledMigrations = fileURLToPath(new URL('../migrations', import.meta.url));
 	const database = openDatabase(join(dataDir, 'funmary.db'), {
 		backupDir: join(dataDir, 'backups'),
