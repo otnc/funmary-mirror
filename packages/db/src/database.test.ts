@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { openDatabase, type Database } from './database.ts';
+import { checkHealth, openDatabase, type Database } from './database.ts';
 import { sessions, users } from './schema.ts';
 
 let dir: string;
@@ -80,5 +80,20 @@ describe('openDatabase', () => {
 		opened = [];
 		expect(() => open()).toThrow(/migration/i);
 		expect(readdirSync(join(dir, 'backups'))).toHaveLength(1);
+	});
+});
+
+describe('checkHealth', () => {
+	it('開いている DB では、読み書きできるとみなす。データは変えない', () => {
+		const database = open();
+		const before = database.sqlite.prepare('SELECT total_changes() AS n').get();
+		expect(checkHealth(database)).toBe(true);
+		expect(database.sqlite.prepare('SELECT total_changes() AS n').get()).toEqual(before);
+	});
+
+	it('閉じた DB では、読み書きできないとみなす', () => {
+		const database = open();
+		database.close();
+		expect(checkHealth(database)).toBe(false);
 	});
 });
