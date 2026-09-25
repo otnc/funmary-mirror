@@ -88,6 +88,19 @@ describe('parseConfig', () => {
 		]);
 	});
 
+	it('足りない変数には、どう直すかを日本語で添える', () => {
+		const result = parseConfig({ ...developmentEnv(), GOOGLE_CLIENT_ID: undefined });
+		expect(result).toEqual({
+			ok: false,
+			issues: [
+				{
+					name: 'GOOGLE_CLIENT_ID',
+					message: expect.stringContaining('Google Cloud Console') as string,
+				},
+			],
+		});
+	});
+
 	it('公開 URL とポータルのアカウントは、本番でだけ求める', () => {
 		const production = parseConfig({ ...developmentEnv(), NODE_ENV: 'production' });
 		expect(production.ok ? [] : production.issues.map((issue) => issue.name).toSorted()).toEqual([

@@ -211,10 +211,16 @@ function envSchema(mode: Mode) {
 export function parseConfig(env: Readonly<Record<string, string | undefined>>): ConfigResult {
 	const mode: Mode = env['NODE_ENV'] === 'production' ? 'production' : 'development';
 	// 空の値は、書かなかったのと同じに扱う。.env.example を丸ごと写しても動くようにするため
-	const present = Object.fromEntries(
-		Object.entries(env).filter(([, value]) => value !== undefined && value.trim() !== ''),
+	// 変数がない場合も、値を undefined にして並べておく。Valibot は、ない変数には既定の英語の説明を付けるが、
+	// undefined の値なら変数ごとに書いた説明を使うため
+	const schema = envSchema(mode);
+	const input = Object.fromEntries(
+		Object.keys(schema.entries).map((name) => {
+			const value = env[name];
+			return [name, value === undefined || value.trim() === '' ? undefined : value];
+		}),
 	);
-	const result = v.safeParse(envSchema(mode), present);
+	const result = v.safeParse(schema, input);
 	const issues: ConfigIssue[] = result.success
 		? []
 		: result.issues.map((issue) => {
