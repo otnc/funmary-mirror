@@ -2,7 +2,7 @@
 import { generateKeyPairSync } from 'node:crypto';
 import { generateEncryptionKey, generateToken } from '@funmary/db';
 
-/** funmary init が作る鍵の名前 */
+/** funmary-admin init が作る鍵の名前 */
 export const SECRET_NAMES = [
 	'SESSION_SECRET',
 	'ENCRYPTION_KEY',
@@ -12,7 +12,7 @@ export const SECRET_NAMES = [
 
 export type Secrets = Record<(typeof SECRET_NAMES)[number], string>;
 
-/** funmary init が埋める鍵を、新しく作る */
+/** funmary-admin init が埋める鍵を、新しく作る */
 export function generateSecrets(): Secrets {
 	// プッシュ通知の VAPID の鍵は P-256 (Web Push の決まり)。公開鍵は非圧縮の点 (0x04 と x と y)
 	const { publicKey, privateKey } = generateKeyPairSync('ec', { namedCurve: 'prime256v1' });
