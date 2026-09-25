@@ -24,8 +24,10 @@ data/
 *.db-shm
 *.db-wal
 
-# 公開しない資料
+# 公開しない資料と、各自の手元の指示
 .private/
+CLAUDE.local.md
+AGENTS.local.md
 
 # AI エージェントの手元の設定。公開するのは .agents/skills だけ
 .claude/

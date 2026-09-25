@@ -6,8 +6,6 @@
 
 Funmary は、公立はこだて未来大学の学生向けの便利な総合 Web アプリです。大学とは関係のない非公式のアプリです。pnpm workspace のモノレポで、画面は SvelteKit、機械向けの API は Hono、データは SQLite で作ります。本番は VPS 1 台の Node.js のプロセス 1 つで動かします。
 
-作者の手元には、非公開の設計書 `.private/DESIGN.md` があります。このファイルがあれば、機能を作る前に関係する章を読んでください。設計書は Git の管理対象外なので、中身をコミットやコード、公開の文書に写さないでください。
-
 ## 言語
 
 このプロジェクトは日本語で運営しています。
@@ -42,6 +40,7 @@ Windows で開発しているので、npm scripts に POSIX シェル前提の�
 - コミットメッセージとブランチ名は CONTRIBUTING.md の決まりに従う。commitlint が検査する
 - 用語とコードの名前は [CONTEXT.md](CONTEXT.md) に合わせる。新しい用語を使うときは CONTEXT.md に足す
 - 分からないことや、作者が決めるべきことは、推測で進めずに質問する
+- 各自の手元だけの指示は、Git の管理対象外の `CLAUDE.local.md` (Claude Code) や `AGENTS.local.md` に書く。これらはコミットしない
 
 ## 守ること
 
