@@ -22,6 +22,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"typecheck": "tsc --noEmit && pnpm --filter @funmary/web check",
+		"typecheck:ts6": "tsc6 --noEmit",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"test:e2e": "pnpm --filter @funmary/web test:e2e",
