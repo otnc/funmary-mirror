@@ -56,3 +56,14 @@ jobs:
             "release/funmary-$VERSION.tar.gz.sha256" \
             release/build-hash.txt \
             release/THIRD_PARTY_LICENSES.txt
+      - name: 古い自動リリースを消す
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP: '10'
+        run: |
+          # build- で始まる自動のリリースだけを対象にし、新しいものから KEEP 個を残す。v で始まる正式なリリースには触れない
+          gh release list --limit 200 --json tagName,createdAt \
+            --jq "map(select(.tagName | startswith(\"build-\"))) | sort_by(.createdAt) | reverse | .[$KEEP:] | .[].tagName" |
+            while read -r tag; do
+              gh release delete "$tag" --cleanup-tag --yes
+            done
