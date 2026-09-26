@@ -200,6 +200,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@funmary/core':
+        specifier: workspace:*
+        version: link:../core
       better-sqlite3:
         specifier: 'catalog:'
         version: 13.0.3
