@@ -8,6 +8,8 @@
 		".": "./src/index.ts"
 	},
 	"dependencies": {
-		"@funmary/db": "workspace:*"
+		"@funmary/db": "workspace:*",
+		"jose": "^6.2.12",
+		"openid-client": "^6.8.8"
 	}
 }
