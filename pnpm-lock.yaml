@@ -202,6 +202,8 @@ importers:
         specifier: ^4.13.9
         version: 4.13.9
 
+  packages/auth: {}
+
   packages/core: {}
 
   packages/db:
