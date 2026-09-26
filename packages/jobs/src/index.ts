@@ -15,3 +15,7 @@ export {
 	createImportSyllabusJob,
 	type ImportSyllabusDeps,
 } from './import-syllabus.ts';
+export {
+	createRemindTimetableImportJob,
+	type RemindTimetableImportDeps,
+} from './remind-timetable-import.ts';
