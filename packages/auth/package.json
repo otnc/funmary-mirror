@@ -6,5 +6,8 @@
 	"license": "(BSD-3-Clause OR Apache-2.0)",
 	"exports": {
 		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@funmary/db": "workspace:*"
 	}
 }
