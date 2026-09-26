@@ -10,7 +10,12 @@ const config = {
 		typescript: {
 			// E2E テスト、ビルドの補助のスクリプト、Playwright の設定も型の検査に含める
 			config: (config) => {
-				config['include'].push('../e2e/**/*.ts', '../scripts/**/*.ts', '../playwright.config.ts');
+				config['include'].push(
+					'../e2e/**/*.ts',
+					'../scripts/**/*.ts',
+					'../playwright.config.ts',
+					'../tsdown.config.ts',
+				);
 			},
 		},
 	},

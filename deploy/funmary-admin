@@ -1,0 +1,5 @@
+#!/bin/sh
+# 管理用コマンドのラッパー。root で実行し、funmary のユーザーに切り替えて、unit と同じ条件で cli.js を動かす。
+# 環境変数ファイルは --env-file で読む。すでにある環境変数は上書きしないので、先に渡した STATE_DIRECTORY が優先される。
+exec runuser -u funmary -- env NODE_ENV=production TZ=Asia/Tokyo STATE_DIRECTORY=/var/lib/funmary \
+  /usr/bin/node --env-file=/etc/funmary/funmary.env /opt/funmary/current/cli.js "$@"
