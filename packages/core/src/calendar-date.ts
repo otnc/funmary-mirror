@@ -18,6 +18,11 @@ function fromUtcMs(ms: number): CalendarDate {
 	return new Date(ms).toISOString().slice(0, 10);
 }
 
+/** date から days 日後 (負の数なら前) の日付 */
+export function addDays(date: CalendarDate, days: number): CalendarDate {
+	return fromUtcMs(toUtcMs(date) + days * DAY_MS);
+}
+
 export function isoWeekday(date: CalendarDate): Weekday {
 	const day = new Date(toUtcMs(date)).getUTCDay();
 	return (day === 0 ? 7 : day) as Weekday;
