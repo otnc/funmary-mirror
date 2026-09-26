@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { parseSyllabusList } from './list.ts';
+import { parseSearchForm, parseSyllabusList } from './list.ts';
 
 const fixture = readFileSync(new URL('./fixtures/list.html', import.meta.url), 'utf8');
 
@@ -77,6 +77,31 @@ describe('シラバス検索結果の解析', () => {
 				expect(['ok', 'invalid']).toContain(parseSyllabusList(html).kind);
 			}),
 			{ numRuns: 200 },
+		);
+	});
+});
+
+describe('検索画面のフォームの解析', () => {
+	it('年度の選択肢と、検索ボタンの名前、hidden の値を取り出す', () => {
+		const result = parseSearchForm(fixture);
+		if (result.kind !== 'ok') throw new Error('読めるはず');
+		expect(result.form.years).toEqual([2026, 2025]);
+		expect(result.form.yearField).toBe('ctl00$MainContent$param_Syllabus_year_eq');
+		expect(result.form.submitField).toBe('ctl00$MainContent$SearchButton');
+		expect(result.form.submitValue).toBe('検索の実行');
+		expect(result.form.hidden.get('__VIEWSTATE')).toBe('dummy-viewstate');
+	});
+
+	it('検索のフォームがなければ、構造が変わったものとして知らせる', () => {
+		expect(parseSearchForm('<html><body>メンテナンス中</body></html>').kind).toBe('invalid');
+	});
+
+	it('崩れた HTML でも、例外にならない', () => {
+		fc.assert(
+			fc.property(fc.string(), (html) => {
+				expect(['ok', 'invalid']).toContain(parseSearchForm(html).kind);
+			}),
+			{ numRuns: 100 },
 		);
 	});
 });

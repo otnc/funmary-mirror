@@ -56,6 +56,16 @@ const TERMS = new Map<string, Term>([
 	['4Q', 'q4'],
 ]);
 
+/** 開講期の表記から Term を決める。夏期集中、冬期集中は、開講期の表記か、授業名の "夏期集中" などで見分ける */
+function termFrom(label: string | undefined, name: string): Term | undefined {
+	const known = label === undefined ? undefined : TERMS.get(normalizeLabel(label));
+	if (known) return known;
+	const text = normalizeLabel(`${label ?? ''}${name}`);
+	if (/夏期?集中/.test(text)) return 'summer-intensive';
+	if (/冬期?集中/.test(text)) return 'winter-intensive';
+	return undefined;
+}
+
 /** 制御文字を除き、前後の空白を取り、長さの上限で切る (改行は残す) */
 function clean(text: string, max: number): string {
 	return text
@@ -113,7 +123,7 @@ export function parseSyllabusDetail(html: string): SyllabusDetailResult {
 	const name = attributes.get('授業名');
 	if (!name) return { kind: 'invalid', reason: '授業名がありません' };
 	const termLabel = attributes.get('開講期');
-	const term = termLabel === undefined ? undefined : TERMS.get(normalizeLabel(termLabel));
+	const term = termFrom(termLabel, name);
 	if (!term)
 		return { kind: 'invalid', reason: `開講期を読めませんでした: ${termLabel ?? '(なし)'}` };
 

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fetchPortalPage, type PortalFetch } from './client.ts';
+import { fetchPortalPage } from './client.ts';
+import type { PortalFetch } from './http.ts';
 
 const loginHtml = readFileSync(new URL('./fixtures/login.html', import.meta.url), 'utf8');
 const lectureHtml = readFileSync(new URL('./fixtures/all-kinds.html', import.meta.url), 'utf8');

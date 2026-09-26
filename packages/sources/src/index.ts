@@ -27,13 +27,8 @@ export {
 	portalAttemptAllowed,
 	type AttemptDecision,
 } from './portal/throttle.ts';
-export {
-	PORTAL_ORIGIN,
-	fetchPortalPage,
-	type FetchPortalDeps,
-	type FetchPortalResult,
-	type PortalFetch,
-} from './portal/client.ts';
+export { fetchPortalPage, type FetchPortalDeps, type FetchPortalResult } from './portal/client.ts';
+export { PORTAL_ORIGIN, type PortalFetch } from './portal/http.ts';
 export {
 	buildLoginBody,
 	parseLoginForm,
@@ -50,3 +45,10 @@ export {
 	type SyllabusListResult,
 	type SyllabusListRow,
 } from './syllabus/list.ts';
+export {
+	fetchSyllabusCatalog,
+	type FetchSyllabusDeps,
+	type FetchSyllabusResult,
+	type SyllabusEntry,
+} from './syllabus/client.ts';
+export { parseSearchForm, type SearchForm, type SearchFormResult } from './syllabus/list.ts';

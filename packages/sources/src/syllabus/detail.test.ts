@@ -60,6 +60,17 @@ describe('シラバスの詳細の解析', () => {
 		expect(termOf('未定')).toBe('invalid');
 	});
 
+	it('夏期集中と冬期集中は、開講期の表記か授業名から見分ける', () => {
+		const termOf = (html: string) => {
+			const result = parseSyllabusDetail(html);
+			return result.kind === 'ok' ? result.detail.term : result.kind;
+		};
+		expect(termOf(fixture.replace('>後期<', '>夏期集中<'))).toBe('summer-intensive');
+		expect(termOf(fixture.replace('>後期<', '>集中<').replace('入門1～4', '入門　冬期集中'))).toBe(
+			'winter-intensive',
+		);
+	});
+
 	it('単位数が数字でなければ、単位数を空にして続ける', () => {
 		const html = fixture.replace('2単位', '未定');
 		const result = parseSyllabusDetail(html);

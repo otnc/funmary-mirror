@@ -106,3 +106,58 @@ export function parseSyllabusList(html: string): SyllabusListResult {
 		maxPageLinked: pageNumbers.length > 0 ? Math.max(...pageNumbers) : 1,
 	};
 }
+
+export interface SearchForm {
+	/** hidden の値。次の検索や、ページ送りの POST に、そのまま送る */
+	readonly hidden: ReadonlyMap<string, string>;
+	/** 年度の選択肢 (画面に出ているもの) */
+	readonly years: readonly number[];
+	readonly yearField: string;
+	readonly submitField: string;
+	readonly submitValue: string;
+}
+
+export type SearchFormResult =
+	| { readonly kind: 'ok'; readonly form: SearchForm }
+	| { readonly kind: 'invalid'; readonly reason: string };
+
+const str = (value: unknown): string | undefined => (typeof value === 'string' ? value : undefined);
+
+/** 検索画面のフォーム (年度の選択肢と、検索ボタン) を読む */
+export function parseSearchForm(html: string): SearchFormResult {
+	let tree: Root;
+	try {
+		tree = fromHtml(html);
+	} catch {
+		return { kind: 'invalid', reason: 'HTML を読めませんでした' };
+	}
+	const hidden = new Map<string, string>();
+	for (const input of selectAll('input[type="hidden"]', tree)) {
+		const name = str(input.properties['name']);
+		if (name) hidden.set(name, str(input.properties['value']) ?? '');
+	}
+	if (!hidden.has('__VIEWSTATE')) return { kind: 'invalid', reason: '__VIEWSTATE がありません' };
+
+	const yearSelect = select('select[name$="param_Syllabus_year_eq"]', tree);
+	const yearField = yearSelect && str(yearSelect.properties['name']);
+	const years = yearSelect
+		? selectAll('option', yearSelect)
+				.map((option) => Number(str(option.properties['value'])))
+				.filter((year) => Number.isInteger(year) && year >= 2000)
+		: [];
+	const submit = select('input[type="submit"][name$="SearchButton"]', tree);
+	const submitField = submit && str(submit.properties['name']);
+	if (!yearField || years.length === 0 || !submitField) {
+		return { kind: 'invalid', reason: '年度の選択肢か検索ボタンがありません' };
+	}
+	return {
+		kind: 'ok',
+		form: {
+			hidden,
+			years,
+			yearField,
+			submitField,
+			submitValue: str(submit.properties['value']) ?? '',
+		},
+	};
+}

@@ -10,3 +10,8 @@ export {
 	type JobRunStore,
 	type JobStatus,
 } from './runner.ts';
+export {
+	SYLLABUS_SOURCE,
+	createImportSyllabusJob,
+	type ImportSyllabusDeps,
+} from './import-syllabus.ts';

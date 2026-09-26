@@ -13,12 +13,18 @@ import {
 	createAuthStore,
 	createClassChangeStore,
 	createSourceHealthStore,
+	createSubjectStore,
 	createJobRunStore,
 	openDatabase,
 	type AuthStore,
 } from '@funmary/db';
-import { createJobRunner, createScrapePortalJob, type JobDefinition } from '@funmary/jobs';
-import { fetchPortalPage } from '@funmary/sources';
+import {
+	createImportSyllabusJob,
+	createJobRunner,
+	createScrapePortalJob,
+	type JobDefinition,
+} from '@funmary/jobs';
+import { fetchPortalPage, fetchSyllabusCatalog } from '@funmary/sources';
 import { createAdminAlerter } from '@funmary/notify';
 import { createLogger, type Logger } from '@funmary/log';
 import { parseConfig } from '$lib/server/config.ts';
@@ -83,6 +89,23 @@ export const init: ServerInit = () => {
 		log: logger,
 	});
 	const jobs: JobDefinition[] = [];
+	// 公開シラバスは、ログインが要らないので、ポータルのアカウントがなくても動かす
+	const subjectStore = createSubjectStore(database);
+	jobs.push(
+		createImportSyllabusJob({
+			fetchCatalog: ({ academicYear, needsDetail, signal }) =>
+				fetchSyllabusCatalog({
+					fetch: (url, init) => fetch(url, init),
+					academicYear,
+					needsDetail,
+					signal,
+				}),
+			disabledSources: result.config.sourcesDisabled,
+			health: createSourceHealthStore(database),
+			subjects: subjectStore,
+			alert: (alert) => alerter.send(alert),
+		}),
+	);
 	const portal = result.config.portal;
 	const heartbeatUrl = result.config.heartbeatUrl;
 	if (portal) {
