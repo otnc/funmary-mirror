@@ -150,6 +150,9 @@ importers:
       '@funmary/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@funmary/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@funmary/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -198,9 +201,16 @@ importers:
 
   packages/api:
     dependencies:
+      '@funmary/auth':
+        specifier: workspace:*
+        version: link:../auth
       hono:
         specifier: ^4.13.9
         version: 4.13.9
+    devDependencies:
+      '@funmary/db':
+        specifier: workspace:*
+        version: link:../db
 
   packages/auth:
     dependencies:
@@ -213,6 +223,9 @@ importers:
       openid-client:
         specifier: ^6.8.8
         version: 6.8.8
+      valibot:
+        specifier: 'catalog:'
+        version: 1.5.0(typescript@6.0.3)
 
   packages/core: {}
 
