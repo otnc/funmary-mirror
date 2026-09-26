@@ -23,6 +23,8 @@ jobs:
       - run: pnpm format:check
       - run: pnpm lint
       - run: pnpm typecheck
+      # typescript-eslint と svelte-check は 6 系で動くので、7 系と判定が食い違っていないかを確かめる
+      - run: pnpm typecheck:ts6
       - run: pnpm test
       - run: pnpm build
 

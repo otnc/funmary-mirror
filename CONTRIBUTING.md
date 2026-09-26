@@ -25,19 +25,32 @@ pnpm dev
 
 ### よく使うコマンド
 
-| コマンド         | 内容                                                                                                                        |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm dev`       | 開発サーバーを起動する (http://localhost:5173)                                                                              |
-| `pnpm lint`      | ESLint で検査する                                                                                                           |
-| `pnpm format`    | Prettier で整形する。`pnpm format:check` は確認だけ                                                                         |
-| `pnpm typecheck` | TypeScript 7 の `tsc` と svelte-check で型を検査する                                                                        |
-| `pnpm test`      | Vitest で単体テストを実行する。`pnpm test:watch` は変更を見張って実行し直す                                                 |
-| `pnpm test:e2e`  | Playwright で E2E テストを実行する。初回は `pnpm --filter @funmary/web exec playwright install chromium` でブラウザを入れる |
-| `pnpm build`     | 本番用にビルドし、ページごとの JavaScript の量 (圧縮後 60 KB まで) を検査する                                               |
+| コマンド         | 内容                                                                                                                                    |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`       | 開発サーバーを起動する (http://localhost:5173)                                                                                          |
+| `pnpm lint`      | ESLint で検査する                                                                                                                       |
+| `pnpm format`    | Prettier で整形する。`pnpm format:check` は確認だけ                                                                                     |
+| `pnpm typecheck` | TypeScript 7 の `tsc` と svelte-check で型を検査する。`pnpm typecheck:ts6` は 6 系の `tsc6` での検査 (7 系と判定が食い違わないかを見る) |
+| `pnpm test`      | Vitest で単体テストを実行する。`pnpm test:watch` は変更を見張って実行し直す                                                             |
+| `pnpm test:e2e`  | Playwright で E2E テストを実行する。初回は `pnpm --filter @funmary/web exec playwright install chromium` でブラウザを入れる             |
+| `pnpm build`     | 本番用にビルドし、ページごとの JavaScript の量 (圧縮後 60 KB まで) を検査する                                                           |
 
 ### TypeScript は 2 つの版を併用する
 
-型の検査には TypeScript 7 (`tsc`) を使います。ただし typescript-eslint と svelte-check はまだ 7 系に対応していないので、これらには 6 系を渡しています。`package.json` では 7 系を `@typescript/native`、6 系を `typescript` という名前で入れています。両ツールが 7 系に対応したら、7 系だけにします。
+型の検査には TypeScript 7 (`tsc`) を使います。ただし typescript-eslint と svelte-check は、JavaScript の API を `typescript` という名前で読み込み、まだ 7 系に対応していません。これらには、Microsoft が橋渡しとして出している `@typescript/typescript6` (6 系) を渡します。`package.json` では次のように入れています。
+
+- `typescript` は `npm:@typescript/typescript6@^6.0.2` の別名。ツールが読み込む 6 系。コマンドは `tsc6`
+- `@typescript/native` は `npm:typescript@^7.0.2` の別名。型検査に使う 7 系。コマンドは `tsc`
+
+`typescript` を 7 系に更新するだけだと、`tsc` は速くなっても lint と svelte-check が動かなくなります。この 2 つを分けて持つのが、7 系が出た時点での正規の使い方です。役割は次のとおりです。
+
+| 使うもの                        | 用途                                                                   |
+| ------------------------------- | ---------------------------------------------------------------------- |
+| `tsc` (7 系)                    | `.ts` の型検査 (約 3 秒。6 系の約 4 分の 1)                            |
+| `tsc6` (6 系)                   | 7 系と判定が食い違わないかの確認 (`pnpm typecheck:ts6`。CI でも動かす) |
+| typescript-eslint、svelte-check | 6 系の API を使う                                                      |
+
+TypeScript の版を上げる変更は、互換性の確認 (6 系と 7 系の結果の比較) と、速度の測定を、別の PR にします。混ぜると、不具合の原因を切り分けにくくなります。両ツールが 7 系に対応したら、別名をやめて 7 系だけにします (Issue #43)。
 
 ## 作業の流れ
 
