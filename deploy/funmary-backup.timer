@@ -1,0 +1,10 @@
+[Unit]
+Description=Funmary のバックアップを毎日取る
+
+[Timer]
+OnCalendar=*-*-* 04:00:00 Asia/Tokyo
+# VPS が止まっていて時刻を逃したら、起動したときに取る
+Persistent=true
+
+[Install]
+WantedBy=timers.target
