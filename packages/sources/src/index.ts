@@ -52,3 +52,21 @@ export {
 	type SyllabusEntry,
 } from './syllabus/client.ts';
 export { parseSearchForm, type SearchForm, type SearchFormResult } from './syllabus/list.ts';
+export {
+	extractPdfTextItems,
+	parseTimetablePdf,
+	type ExtractResult,
+} from './timetable-pdf/extract.ts';
+export {
+	parseTimetableItems,
+	type PdfTextItem,
+	type Quarter,
+	type TimetablePdfEntry,
+	type TimetablePdfIntensive,
+	type TimetablePdfResult,
+} from './timetable-pdf/grid.ts';
+export {
+	DEFAULT_TIMETABLE_PDF_OPTIONS,
+	type TimetablePdfOptions,
+	type TimetablePdfQuality,
+} from './timetable-pdf/grid.ts';

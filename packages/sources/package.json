@@ -14,6 +14,7 @@
 		"hast-util-select": "^6.0.4",
 		"hast-util-to-text": "^4.0.2",
 		"papaparse": "^5.7.0",
+		"pdfjs-dist": "^6.3.289",
 		"tough-cookie": "^6.0.2",
 		"valibot": "catalog:"
 	},
