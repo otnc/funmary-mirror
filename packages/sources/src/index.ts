@@ -19,3 +19,5 @@ export {
 	type Holiday,
 	type HolidayParseResult,
 } from './holidays/parse.ts';
+export { estimateHolidays } from './holidays/estimate.ts';
+export { bundledHolidays } from './holidays/bundled.ts';

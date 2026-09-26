@@ -228,6 +228,9 @@ importers:
       '@funmary/core':
         specifier: workspace:*
         version: link:../core
+      '@holiday-jp/holiday_jp':
+        specifier: ^2.5.2
+        version: 2.5.2
       hast-util-from-html:
         specifier: ^2.0.3
         version: 2.0.3
@@ -848,6 +851,9 @@ packages:
   '@eslint/plugin-kit@0.7.3':
     resolution: {integrity: sha512-IkO+/KEUvwbVpiURZg+P7zF74z5Jxe0UgJxVni+RtoHQ6IZieXaO02kmadomap/q+l6bc/jdPGGqTjhuZnuz1Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@holiday-jp/holiday_jp@2.5.2':
+    resolution: {integrity: sha512-yW5oc0TFgOWVHMdfnnpKz7daDjuGY2yCR/q8hLc3EvDKxZY/5/oCXxXdOahXH8te8hMvWFmKxkfeWsUKdpa1Ug==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -3373,6 +3379,8 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
+
+  '@holiday-jp/holiday_jp@2.5.2': {}
 
   '@humanfs/core@0.19.2':
     dependencies:

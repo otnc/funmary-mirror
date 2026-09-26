@@ -24,3 +24,9 @@ export {
 	type TermPeriod,
 	type TimetableInput,
 } from './timetable.ts';
+export {
+	resolveHolidays,
+	type HolidaySource,
+	type ResolvedHoliday,
+	type ResolveHolidaysInput,
+} from './holidays.ts';
