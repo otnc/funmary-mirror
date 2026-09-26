@@ -1,0 +1,21 @@
+#!/bin/sh
+# 反映用の鍵で SSH に入ったときに、sudo 経由で呼ばれる入口。
+# authorized_keys の command= で必ずここに来る。SSH で渡された版の名前を確かめてから update.sh に渡す。
+set -eu
+
+version="${SSH_ORIGINAL_COMMAND:-}"
+case "$version" in
+  build-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;;
+  v[0-9]*.[0-9]*.[0-9]*) ;;
+  *)
+    echo "版の名前は build-<hash> か v<数字>.<数字>.<数字> の形にしてください" >&2
+    exit 2
+    ;;
+esac
+# 上の case は前方一致なので、使ってよい文字だけかを改めて確かめる
+if printf '%s' "$version" | grep -Eq '[^0-9A-Za-z.+-]'; then
+  echo "版の名前に使えない文字があります" >&2
+  exit 2
+fi
+
+exec /opt/funmary/current/deploy/update.sh "$version"

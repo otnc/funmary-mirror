@@ -3,6 +3,7 @@ node_modules/
 
 # ビルドの出力
 build/
+release/
 dist/
 .svelte-kit/
 *.tsbuildinfo

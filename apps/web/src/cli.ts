@@ -2,10 +2,14 @@
 // 秘密の値は画面に出さない。出すのは変数の名前だけにする。
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineCommand, runMain } from 'citty';
 import { openDatabase } from '@funmary/db';
 import { parseConfig, type Config } from './lib/server/config.ts';
 import { fillSecrets, generateSecrets } from './lib/server/env-file.ts';
+
+/** リリースでは cli.js の隣に migrations を置く。TypeScript のまま動かす手元にはないので、DB のパッケージの既定に任せる */
+const bundledMigrations = fileURLToPath(new URL('./migrations', import.meta.url));
 
 /** 手元の開発では .env を読む。本番では systemd やラッパーが環境変数を渡すので読まない */
 function loadDevelopmentEnv(): void {
@@ -62,6 +66,7 @@ const migrate = defineCommand({
 		mkdirSync(config.dataDir, { recursive: true });
 		const database = openDatabase(join(config.dataDir, 'funmary.db'), {
 			backupDir: join(config.dataDir, 'backups'),
+			...(existsSync(bundledMigrations) && { migrationsFolder: bundledMigrations }),
 		});
 		database.close();
 		console.log(`${join(config.dataDir, 'funmary.db')} のマイグレーションを終えました。`);

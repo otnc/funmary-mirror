@@ -7,6 +7,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && node scripts/copy-migrations.ts",
+		"bundle-cli": "tsdown",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo \"svelte-kit sync をスキップしました\"",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
@@ -23,6 +24,7 @@
 		"citty": "^0.2.2",
 		"svelte": "catalog:",
 		"svelte-check": "catalog:",
+		"tsdown": "^0.23.0",
 		"valibot": "catalog:",
 		"vite": "catalog:"
 	},

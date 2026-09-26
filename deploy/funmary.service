@@ -1,0 +1,28 @@
+[Unit]
+Description=Funmary
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=funmary
+Group=funmary
+EnvironmentFile=/etc/funmary/funmary.env
+# DB の置き場所は StateDirectory で決める。環境変数ファイルの空の DATA_DIR= に上書きされないようにするため
+Environment=NODE_ENV=production TZ=Asia/Tokyo
+StateDirectory=funmary
+StateDirectoryMode=0750
+WorkingDirectory=/opt/funmary/current
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+MemoryMax=400M
+
+# 権限を絞る
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
