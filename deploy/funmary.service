@@ -9,6 +9,8 @@ Group=funmary
 EnvironmentFile=/etc/funmary/funmary.env
 # DB の置き場所は StateDirectory で決める。環境変数ファイルの空の DATA_DIR= に上書きされないようにするため
 Environment=NODE_ENV=production TZ=Asia/Tokyo
+# 停止するときに、実行中の処理を待つ秒数 (adapter-node の SHUTDOWN_TIMEOUT)。TimeoutStopSec より短くする
+Environment=SHUTDOWN_TIMEOUT=10
 StateDirectory=funmary
 StateDirectoryMode=0750
 WorkingDirectory=/opt/funmary/current

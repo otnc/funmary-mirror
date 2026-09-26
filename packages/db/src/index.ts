@@ -27,3 +27,9 @@ export {
 	type StoredSource,
 } from './academic-calendar-store.ts';
 export { createClassChangeStore, type ClassChangeStore } from './class-change-store.ts';
+export {
+	createJobRunStore,
+	type JobRunStatus,
+	type JobRunStore as StoredJobRunStore,
+	type StoredJobRun,
+} from './job-run-store.ts';

@@ -7,12 +7,18 @@ import type { Handle, ServerInit } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
 import { createApi } from '@funmary/api';
-import { checkHealth, openDatabase } from '@funmary/db';
+import { checkHealth, createJobRunStore, openDatabase } from '@funmary/db';
+import { createJobRunner } from '@funmary/jobs';
 import { createLogger, type Logger } from '@funmary/log';
 import { parseConfig } from '$lib/server/config.ts';
 
 /** Hono に渡すパス。これ自身か、この下のパスが対象になる */
 const API_PATHS = ['/api', '/auth', '/cal', '/feed', '/healthz', '/mcp'];
+
+/** 定期処理の実行記録を残す期間 */
+const JOB_RUN_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+/** 停止するときに、実行中の定期処理を待つ時間 (設計書 4.5)。systemd の TimeoutStopSec より短くする */
+const SHUTDOWN_GRACE_MS = 10_000;
 
 /** 開発サーバーで動くときの、リポジトリのルート (このファイルは apps/web/src にある) */
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
@@ -46,8 +52,27 @@ export const init: ServerInit = () => {
 		backupDir: join(dataDir, 'backups'),
 		...(existsSync(bundledMigrations) && { migrationsFolder: bundledMigrations }),
 	});
-	// adapter-node は、停止するときにこのイベントを出す。書きかけのデータを残さないように DB を閉じる
-	process.once('sveltekit:shutdown', () => database.close());
+	// 起動したときに、前回の途中で止まって "running" のまま残った記録を閉じ、古い記録を消す
+	const jobRunStore = createJobRunStore(database);
+	const interrupted = jobRunStore.closeInterrupted(new Date());
+	if (interrupted > 0)
+		logger.withTag('app').warn(`途中で止まった定期処理の記録を ${interrupted} 件閉じました`);
+	jobRunStore.prune(new Date(Date.now() - JOB_RUN_RETENTION_MS));
+
+	// 定期処理。個々の処理は、取得の実装ができたところで足す
+	const runner = createJobRunner({ jobs: [], store: jobRunStore, log: logger });
+	runner.start();
+
+	// adapter-node は、SIGTERM を受けるとこのイベントを出して、終わるのを待つ (待つ時間の上限は SHUTDOWN_TIMEOUT)。
+	// 新しい処理を止め、実行中の処理を待ってから、書きかけのデータを残さないように DB を閉じる
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises -- adapter-node が、リスナーの返す Promise を待つ
+	process.once('sveltekit:shutdown', async () => {
+		const { abandoned } = await runner.stop({ graceMs: SHUTDOWN_GRACE_MS });
+		if (abandoned.length > 0) {
+			logger?.withTag('app').warn(`終わらなかった定期処理を中断しました: ${abandoned.join('、')}`);
+		}
+		database.close();
+	});
 
 	api = createApi({ checkHealth: () => checkHealth(database) });
 	logger.withTag('app').info(`起動しました (${result.config.mode}、DB は ${dataDir})`);
