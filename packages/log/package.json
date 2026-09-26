@@ -1,0 +1,13 @@
+{
+	"name": "@funmary/log",
+	"private": true,
+	"type": "module",
+	"description": "ログの出し方と、秘密の値を伏せる処理",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"consola": "^3.4.2"
+	}
+}
