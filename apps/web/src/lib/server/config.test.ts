@@ -87,6 +87,16 @@ describe('parseConfig', () => {
 		]);
 	});
 
+	it('OIDC_ISSUER は、書かなければ Google を使い、書けば http の URL も受け付ける (テスト用のサーバーに向けるため)', () => {
+		const issuerOf = (extra: Record<string, string>) => {
+			const result = parseConfig({ ...developmentEnv(), ...extra });
+			return result.ok ? result.config.google.issuer : 'error';
+		};
+		expect(issuerOf({})).toBeUndefined();
+		expect(issuerOf({ OIDC_ISSUER: 'http://localhost:4174' })).toBe('http://localhost:4174');
+		expect(issuerOf({ OIDC_ISSUER: 'ftp://example.com' })).toBe('error');
+	});
+
 	it('プッシュ通知の連絡先 (VAPID_SUBJECT) が空なら公開 URL を使い、どちらもなければ連絡先なしにする', () => {
 		const subjectOf = (extra: Record<string, string>) => {
 			const result = parseConfig({ ...developmentEnv(), VAPID_SUBJECT: '', ...extra });

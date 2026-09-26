@@ -20,7 +20,12 @@ export interface Config {
 		/** プッシュのサービス (Google、Mozilla、Apple) に伝える連絡先。ないときはプッシュ通知を止める */
 		readonly subject: string | undefined;
 	};
-	readonly google: { readonly clientId: string; readonly clientSecret: string };
+	readonly google: {
+		readonly clientId: string;
+		readonly clientSecret: string;
+		/** Google の代わりのサーバー (E2E テスト用)。ないときは Google */
+		readonly issuer: string | undefined;
+	};
 	readonly allowedEmailDomains: readonly string[];
 	readonly registration: 'invite' | 'open' | 'closed';
 	readonly invitesPerUser: number;
@@ -173,6 +178,8 @@ function envSchema(mode: Mode) {
 		GOOGLE_CLIENT_SECRET: required(
 			'Google Cloud Console で作った OAuth クライアントのシークレットを書いてください',
 		),
+		// E2E テストで、Google の代わりのサーバーに向けるための設定。本番では書かない
+		OIDC_ISSUER: v.optional(httpUrl('http:// か https:// で始まる URL を書いてください')),
 		ALLOWED_EMAIL_DOMAINS: v.optional(commaList(DOMAIN), 'fun.ac.jp'),
 		REGISTRATION: oneOf(['invite', 'open', 'closed'], 'invite'),
 		INVITES_PER_USER: v.optional(integer(0, 100), '0'),
@@ -264,7 +271,11 @@ export function parseConfig(env: Readonly<Record<string, string | undefined>>): 
 				privateKey: e.VAPID_PRIVATE_KEY,
 				subject: e.VAPID_SUBJECT ?? e.ORIGIN,
 			},
-			google: { clientId: e.GOOGLE_CLIENT_ID, clientSecret: e.GOOGLE_CLIENT_SECRET },
+			google: {
+				clientId: e.GOOGLE_CLIENT_ID,
+				clientSecret: e.GOOGLE_CLIENT_SECRET,
+				issuer: e.OIDC_ISSUER,
+			},
 			allowedEmailDomains: e.ALLOWED_EMAIL_DOMAINS,
 			registration: e.REGISTRATION,
 			invitesPerUser: e.INVITES_PER_USER,

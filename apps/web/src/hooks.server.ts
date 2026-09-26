@@ -145,13 +145,16 @@ export const init: ServerInit = () => {
 			clientSecret: result.config.google.clientSecret,
 			redirectUri: `${publicOrigin}/auth/google/callback`,
 			hostedDomain: result.config.allowedEmailDomains[0] ?? 'fun.ac.jp',
+			...(result.config.google.issuer && { issuer: result.config.google.issuer }),
 		}),
 		store,
 		allowedDomains: result.config.allowedEmailDomains,
 		registration: result.config.registration,
 		adminEmails: result.config.adminEmails,
 	});
+	const apiLog = logger.withTag('api');
 	api = createApi({
+		onError: (error, path) => apiLog.error(`${path} で例外が出ました`, error),
 		checkHealth: () => checkHealth(database),
 		auth: {
 			service: authService,
