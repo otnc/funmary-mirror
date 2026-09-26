@@ -5,6 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { generateThirdPartyLicenses } from './third-party-licenses.ts';
 
 const VERSION_PATTERN = /^(build-[0-9a-f]{7,40}|v\d+\.\d+\.\d+(-[0-9A-Za-z.]+)?)$/;
 
@@ -56,6 +57,10 @@ writeFileSync(
 		'\t',
 	) + '\n',
 );
+
+const licenses = generateThirdPartyLicenses(root);
+writeFileSync(join(stage, 'THIRD_PARTY_LICENSES.txt'), licenses);
+writeFileSync(join(outDir, 'THIRD_PARTY_LICENSES.txt'), licenses);
 
 /** ファイルの相対パス (/ 区切り) の順に、パスと中身を混ぜた hash。中身が同じなら、いつ作っても同じになる */
 function hashTree(dir: string): string {

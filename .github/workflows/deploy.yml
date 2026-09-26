@@ -1,0 +1,50 @@
+name: Deploy
+
+# リリースができたら、SSH で VPS に反映を頼む (設計書 20.9)。
+# VPS では funmary-update が版の名前を確かめ、update.sh が取得から切り戻しまでを行う。
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# 同時に動く反映は 1 つだけ。実行中のものは取り消さず、次を待たせる
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: VPS への反映
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      DEPLOY_ENABLED: ${{ vars.DEPLOY_ENABLED }}
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+      DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+    steps:
+      - name: 反映が止められていないか確かめる
+        run: |
+          if [ "$DEPLOY_ENABLED" = "false" ]; then
+            echo "DEPLOY_ENABLED が false なので、反映しません"
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          fi
+      - name: VPS に反映を頼む
+        if: env.SKIP != 'true'
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          # ホストの公開鍵を固定する。接続先がすり替わっていれば、接続しない
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          # この鍵で入ると、VPS 側が決めたコマンドだけが動く。ここで渡す版の名前は、VPS 側でも形を確かめる
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "funmary-deploy@$DEPLOY_HOST" "build-${HEAD_SHA:0:7}"
