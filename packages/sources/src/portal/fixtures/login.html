@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="utf-8"><title>ログイン (学生ポータル)</title></head>
+<body>
+<form method="post" action="./Login" id="ctl00">
+<div class="aspNetHidden">
+<input type="hidden" name="__LASTFOCUS" id="__LASTFOCUS" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="dummy-viewstate+/=">
+</div>
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="C2EE9ABB">
+<input type="hidden" name="__SCROLLPOSITIONX" id="__SCROLLPOSITIONX" value="0">
+<input type="hidden" name="__SCROLLPOSITIONY" id="__SCROLLPOSITIONY" value="0">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="dummy-validation+/=">
+</div>
+<select size="1" name="ctl00$MainContent$TargetYearList" id="MainContent_TargetYearList">
+<option value="2027">2027</option>
+<option selected="selected" value="2026">2026</option>
+<option value="2025">2025</option>
+</select>
+<select size="1" name="ctl00$MainContent$TargetTermList" id="MainContent_TargetTermList">
+<option value="11">1Q</option>
+<option value="12">2Q</option>
+<option selected="selected" value="21">3Q</option>
+<option value="22">4Q</option>
+</select>
+<input name="ctl00$MainContent$LoginId" type="text" id="MainContent_LoginId" required>
+<input name="ctl00$MainContent$LoginPassword" type="password" maxlength="32" id="MainContent_LoginPassword" required>
+<input type="submit" name="ctl00$MainContent$LoginButton" value="ログイン" id="MainContent_LoginButton">
+</form>
+</body>
+</html>
