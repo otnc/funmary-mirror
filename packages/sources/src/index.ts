@@ -27,3 +27,16 @@ export {
 	portalAttemptAllowed,
 	type AttemptDecision,
 } from './portal/throttle.ts';
+export {
+	PORTAL_ORIGIN,
+	fetchPortalPage,
+	type FetchPortalDeps,
+	type FetchPortalResult,
+	type PortalFetch,
+} from './portal/client.ts';
+export {
+	buildLoginBody,
+	parseLoginForm,
+	type LoginForm,
+	type LoginFormResult,
+} from './portal/login-form.ts';
