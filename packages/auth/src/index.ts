@@ -19,3 +19,4 @@ export {
 	type OidcAuthorization,
 	type OidcClient,
 } from './service.ts';
+export { GOOGLE_ISSUER, createGoogleOidcClient, type OidcOptions } from './oidc.ts';
