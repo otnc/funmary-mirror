@@ -31,11 +31,41 @@
       "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
       "computedHash": "37b5e9c624513551da790b52864dc8c84bff996a6d03a380cc6facdcc0a88354"
     },
+    "fix-unnatural-line-breaks": {
+      "source": "otnc/skills_fix-unnatural-line-breaks",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "4ba2572c42709241d1cfc29af898924ea075f7a10c53af522179fdcab4e1f14f"
+    },
     "hono": {
       "source": "honojs/skills",
       "sourceType": "github",
       "skillPath": "skills/hono/SKILL.md",
       "computedHash": "e3f141a41800df815000216a53510fe6f888629471c214706cc05adff27297fb"
+    },
+    "hush-fix": {
+      "source": "ro80t/hush",
+      "sourceType": "github",
+      "skillPath": "skills/hush-fix/SKILL.md",
+      "computedHash": "c4fa82fdf1b5f3dfa38130c3ffd1b989af8d69e453ced9dd9a58da5d27286a51"
+    },
+    "hush-review": {
+      "source": "ro80t/hush",
+      "sourceType": "github",
+      "skillPath": "skills/hush-review/SKILL.md",
+      "computedHash": "bfe62505e9a31b5b69bf864bed945ae8ef02b9542f555854977a78b17b9ab035"
+    },
+    "natural-japanese": {
+      "source": "coji/natural-japanese",
+      "sourceType": "github",
+      "skillPath": "skills/natural-japanese/SKILL.md",
+      "computedHash": "2cbc03e78e7533e2baa502b37b58db5dae91dcdb3fa991e02f57d3c6c6805964"
+    },
+    "oi-owarasero": {
+      "source": "nwiizo/oi-owarasero",
+      "sourceType": "github",
+      "skillPath": "skills/oi-owarasero/SKILL.md",
+      "computedHash": "6dc9b0ed0ce73a064d0ea3332591c5957cdfa3ea8144c4f6841886ff1e7c209d"
     },
     "performance": {
       "source": "addyosmani/web-quality-skills",
@@ -61,6 +91,18 @@
       "skillPath": "skills/pnpm/SKILL.md",
       "computedHash": "2ec08c851c6f901d4ed72c21b826416ed074a487db65662b36249418afd728bf"
     },
+    "report-skills": {
+      "source": "mizuamedesu/ReportSkills",
+      "sourceType": "github",
+      "skillPath": "skills/report-skills/SKILL.md",
+      "computedHash": "3f89a827c9d5ed9dc9ce5741b7424fb412d8e4c30734a50b66ad091ab0c29e80"
+    },
+    "stop-ai-slop-jp": {
+      "source": "iKora128/stop-ai-slop-jp",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "4165359286fda94f6d21888bce8286af3c13c7ddb2c162ecb7c311840ef5eeca"
+    },
     "svelte-code-writer": {
       "source": "sveltejs/ai-tools",
       "sourceType": "github",
@@ -78,6 +120,12 @@
       "sourceType": "github",
       "skillPath": "skills/engineering/tdd/SKILL.md",
       "computedHash": "e753a5da75292bbe59d302d89566bc2c53d0e73944da2f0e944a7578883c07d0"
+    },
+    "typescript-design": {
+      "source": "fa0311/typescript-design-skill",
+      "sourceType": "github",
+      "skillPath": "skills/typescript-design/SKILL.md",
+      "computedHash": "3e88b6ee2ed0ad24c2024e3539aa731e2e400cd4bfc7ba48a3e4374507bf9165"
     },
     "vitest": {
       "source": "antfu/skills",

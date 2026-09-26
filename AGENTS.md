@@ -56,18 +56,23 @@ Windows で開発しているので、npm scripts に POSIX シェル前提の�
 
 `.agents/skills/` に、作業に使うスキルを入れています。該当する作業では、対応するスキルを読んでから始めてください。
 
-| スキル                                            | 使うとき                                                                           |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `svelte-code-writer`、`svelte-core-bestpractices` | `.svelte` や `.svelte.ts` を書く、直すとき。仕上げに `svelte-autofixer` で確かめる |
-| `hono`                                            | Hono の API を書くとき                                                             |
-| `pnpm`                                            | 依存の追加、workspace や catalog の設定を変えるとき                                |
-| `vitest`                                          | 単体テストを書くとき                                                               |
-| `tdd`                                             | 機能を足す、不具合を直すとき。テストを先に書く                                     |
-| `playwright-cli`、`playwright-best-practices`     | E2E テストを書くとき、画面を実際に動かして確かめるとき                             |
-| `code-review`                                     | ブランチや PR の変更を見直すとき                                                   |
-| `diagnosing-bugs`                                 | 原因の分からない不具合や、遅さを調べるとき                                         |
-| `codebase-design`                                 | モジュールの分け方やインターフェースを考えるとき                                   |
-| `accessibility`、`web-design-guidelines`          | 画面の使いやすさとアクセシビリティを確かめるとき                                   |
-| `performance`、`best-practices`                   | 表示の速さ、セキュリティ、Web の一般的な作法を確かめるとき                         |
+| スキル                                            | 使うとき                                                                            |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `svelte-code-writer`、`svelte-core-bestpractices` | `.svelte` や `.svelte.ts` を書く、直すとき。仕上げに `svelte-autofixer` で確かめる  |
+| `hono`                                            | Hono の API を書くとき                                                              |
+| `pnpm`                                            | 依存の追加、workspace や catalog の設定を変えるとき                                 |
+| `vitest`                                          | 単体テストを書くとき                                                                |
+| `tdd`                                             | 機能を足す、不具合を直すとき。テストを先に書く                                      |
+| `playwright-cli`、`playwright-best-practices`     | E2E テストを書くとき、画面を実際に動かして確かめるとき                              |
+| `code-review`                                     | ブランチや PR の変更を見直すとき                                                    |
+| `diagnosing-bugs`                                 | 原因の分からない不具合や、遅さを調べるとき                                          |
+| `codebase-design`                                 | モジュールの分け方やインターフェースを考えるとき                                    |
+| `accessibility`、`web-design-guidelines`          | 画面の使いやすさとアクセシビリティを確かめるとき                                    |
+| `hush-review`、`hush-fix`                         | コードのコメントの質を確かめる、直すとき                                            |
+| `typescript-design`                               | TypeScript のモジュールの分け方、型、エラーの扱いを考えるとき                       |
+| `natural-japanese`、`stop-ai-slop-jp`             | README、docs、Issue、PR などの日本語の文章を書く、直すとき                          |
+| `fix-unnatural-line-breaks`                       | 文の途中の不自然な改行を直すとき (この決まりは「言語」の節にある)                   |
+| `report-skills`、`oi-owarasero`                   | 作者の個人の用途 (レポートの作成、作業が止まったときの対話)。開発の作業では使わない |
+| `performance`、`best-practices`                   | 表示の速さ、セキュリティ、Web の一般的な作法を確かめるとき                          |
 
 スキルは [skills CLI](https://github.com/vercel-labs/skills) で管理しています。足すときは `npx skills add <owner/repo> -s <スキル名> -a codex -a claude-code -y` を使い、`.agents/skills/` と `skills-lock.json` をコミットします。`.claude/` と `.agent/` は各自の手元の設定なので、コミットしません。
