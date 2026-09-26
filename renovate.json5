@@ -19,6 +19,20 @@
 		schedule: ['at any time'],
 	},
 
+	// AI エージェントのスキルの中にある、動かさない .github/workflows などを読まない。
+	// 初期設定 (config:recommended) の除外も、ここに書き直す (書くと置き換わるため)
+	ignorePaths: [
+		'**/node_modules/**',
+		'**/bower_components/**',
+		'**/vendor/**',
+		'**/examples/**',
+		'**/__tests__/**',
+		'**/test/**',
+		'**/tests/**',
+		'**/__fixtures__/**',
+		'**/.agents/**',
+	],
+
 	labels: ['dependencies'],
 	dependencyDashboardTitle: '依存の更新の一覧 (Dependency Dashboard)',
 
