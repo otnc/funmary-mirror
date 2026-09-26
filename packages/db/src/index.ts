@@ -26,3 +26,4 @@ export {
 	type AcademicCalendarStore,
 	type StoredSource,
 } from './academic-calendar-store.ts';
+export { createClassChangeStore, type ClassChangeStore } from './class-change-store.ts';
