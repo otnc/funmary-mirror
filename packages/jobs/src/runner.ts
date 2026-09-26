@@ -57,6 +57,8 @@ export interface JobRunnerOptions {
 	readonly now?: () => Date;
 	readonly random?: () => number;
 	readonly sleep?: (ms: number) => Promise<void>;
+	/** 処理が終わるたびに呼ぶ (管理者への知らせなどに使う)。ここで例外が出ても、実行の結果には影響しない */
+	readonly onFinish?: (job: string, result: JobResult) => void | Promise<void>;
 }
 
 export interface JobRunner {
@@ -152,6 +154,13 @@ export function createJobRunner(options: JobRunnerOptions): JobRunner {
 		const result = await work;
 		running.delete(name);
 		store.finish(id, result.status, result.message, now());
+		try {
+			await options.onFinish?.(name, result);
+		} catch (error) {
+			tagged.error(
+				`onFinish で例外が出ました: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
 		const took = now().getTime() - startedAt.getTime();
 		if (result.status === 'succeeded') {
 			tagged.info(`成功 (${took} ms)${result.message ? `: ${result.message}` : ''}`);

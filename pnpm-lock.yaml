@@ -162,6 +162,9 @@ importers:
       '@funmary/log':
         specifier: workspace:*
         version: link:../../packages/log
+      '@funmary/notify':
+        specifier: workspace:*
+        version: link:../../packages/notify
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.63.0
@@ -234,6 +237,12 @@ importers:
       consola:
         specifier: ^3.4.2
         version: 3.4.2
+
+  packages/notify:
+    dependencies:
+      '@funmary/log':
+        specifier: workspace:*
+        version: link:../log
 
   packages/sources:
     dependencies:

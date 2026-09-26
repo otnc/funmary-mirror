@@ -170,6 +170,29 @@ describe('runNow', () => {
 	});
 });
 
+describe('onFinish', () => {
+	it('終わるたびに、タスクの名前と結果を渡す。失敗のときも渡す', async () => {
+		const seen: [string, string][] = [];
+		const { runner } = setup(
+			{ run: () => Promise.reject(new Error('だめ')) },
+			{
+				onFinish: (job: string, result: { status: string }) => void seen.push([job, result.status]),
+			},
+		);
+		await runner.runNow('test-job');
+		expect(seen).toEqual([['test-job', 'failed']]);
+	});
+
+	it('onFinish で例外が出ても、実行の結果は変わらない', async () => {
+		const { runner, runs } = setup(
+			{ run: () => Promise.resolve() },
+			{ onFinish: () => Promise.reject(new Error('知らせに失敗')) },
+		);
+		expect((await runner.runNow('test-job')).status).toBe('succeeded');
+		expect(runs[0]!.status).toBe('succeeded');
+	});
+});
+
 describe('nextRuns', () => {
 	it('cron 式を日本時間で読み、次の実行の時刻を返す (1 日 3 回: 7 時、12 時、18 時)', () => {
 		const { runner } = setup({ schedule: '0 7,12,18 * * *', run: () => Promise.resolve() });

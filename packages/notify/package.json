@@ -1,0 +1,13 @@
+{
+	"name": "@funmary/notify",
+	"private": true,
+	"type": "module",
+	"description": "通知 (管理用の通知、利用者への通知)",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@funmary/log": "workspace:*"
+	}
+}
