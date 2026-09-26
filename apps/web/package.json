@@ -17,6 +17,7 @@
 		"@funmary/api": "workspace:*",
 		"@funmary/core": "workspace:*",
 		"@funmary/db": "workspace:*",
+		"@funmary/log": "workspace:*",
 		"@playwright/test": "catalog:",
 		"@sveltejs/adapter-node": "catalog:",
 		"@sveltejs/kit": "catalog:",
