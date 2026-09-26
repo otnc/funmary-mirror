@@ -42,3 +42,9 @@ export {
 	type NewUser,
 	type RegisterResult,
 } from './auth-store.ts';
+export {
+	createSubjectStore,
+	type StoredSubject,
+	type SubjectInput,
+	type SubjectStore,
+} from './subject-store.ts';

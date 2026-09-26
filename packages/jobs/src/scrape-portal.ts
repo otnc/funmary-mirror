@@ -6,8 +6,6 @@ import {
 	detectChanges,
 	isSourceDisabled,
 	isUnhealthy,
-	recordFailure,
-	recordSuccess,
 	shouldAttempt,
 	type ChangeEvent,
 	type ScrapedChange,
@@ -21,11 +19,10 @@ import {
 	type ParseResult,
 } from '@funmary/sources';
 import type { JobDefinition } from './runner.ts';
+import { failSource, japanDate, succeedSource, type SourceRun } from './source-run.ts';
 
 /** SOURCES_DISABLED と source_status で使う、取得元の名前 */
 export const PORTAL_SOURCE = 'portal';
-
-const JST_OFFSET_MS = 9 * 60 * 60 * 1000;
 
 export interface ScrapePortalDeps {
 	/** ポータルから一覧の HTML を取得する。lastAttemptAt を、間隔の下限の確認に使う */
@@ -54,16 +51,6 @@ export interface ScrapePortalDeps {
 }
 
 const sha256 = (text: string) => createHash('sha256').update(text).digest('hex');
-
-/** 日本時間の日付 (YYYY-MM-DD) と、年度 (4 月から 3 月まで) */
-function japanDate(now: Date): { today: string; academicYear: number } {
-	const jst = new Date(now.getTime() + JST_OFFSET_MS);
-	const year = jst.getUTCFullYear();
-	return {
-		today: jst.toISOString().slice(0, 10),
-		academicYear: jst.getUTCMonth() >= 3 ? year : year - 1,
-	};
-}
 
 function toScraped(parsed: Extract<ParseResult, { kind: 'ok' }>): ScrapedChange[] {
 	return [
@@ -124,29 +111,17 @@ export function createScrapePortalJob(deps: ScrapePortalDeps): JobDefinition {
 				return `不調のあとの待ち時間なので、${health.nextAttemptAt?.toISOString() ?? ''} まで待っています`;
 			}
 
-			/** 失敗を数えて保存し、不調になった 1 回だけ知らせて、例外にする */
-			const fail = async (message: string, alertNow?: { title: string }): Promise<never> => {
-				const { health: next, becameUnhealthy } = recordFailure(health, at, message, {
-					intervalMs: PORTAL_MIN_INTERVAL_MS,
-				});
-				deps.health.save(PORTAL_SOURCE, next);
-				if (alertNow) {
-					await deps.alert({
-						severity: 'error',
-						title: alertNow.title,
-						message,
-						key: 'portal:structure',
-					});
-				} else if (becameUnhealthy) {
-					await deps.alert({
-						severity: 'error',
-						title: `ポータルの取得が不調です (${next.consecutiveFailures} 回続けて失敗)`,
-						message,
-						key: 'portal:unhealthy',
-					});
-				}
-				throw new Error(message);
+			const run: SourceRun = {
+				label: 'ポータル',
+				source: PORTAL_SOURCE,
+				health,
+				save: (next) => deps.health.save(PORTAL_SOURCE, next),
+				alert: deps.alert,
+				at,
+				intervalMs: PORTAL_MIN_INTERVAL_MS,
 			};
+			const fail = (message: string, alertNow?: { title: string }) =>
+				failSource(run, message, alertNow);
 
 			const page = await deps.fetchPage(health.lastAttemptAt);
 			if (page.kind === 'throttled') {
@@ -159,18 +134,7 @@ export function createScrapePortalJob(deps: ScrapePortalDeps): JobDefinition {
 
 			const contentHash = sha256(page.html);
 			const done = async (summary: string) => {
-				const { health: next, recovered } = recordSuccess(health, at, {
-					intervalMs: PORTAL_MIN_INTERVAL_MS,
-					contentHash,
-				});
-				deps.health.save(PORTAL_SOURCE, next);
-				if (recovered) {
-					await deps.alert({
-						severity: 'info',
-						title: 'ポータルの取得が回復しました',
-						key: 'portal:recovered',
-					});
-				}
+				await succeedSource(run, { contentHash });
 				// 監視サービスへの知らせは、失敗しても、取得の結果を変えない
 				try {
 					await deps.heartbeat?.();
