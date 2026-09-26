@@ -168,6 +168,9 @@ importers:
       '@funmary/notify':
         specifier: workspace:*
         version: link:../../packages/notify
+      '@funmary/sources':
+        specifier: workspace:*
+        version: link:../../packages/sources
       '@playwright/test':
         specifier: 'catalog:'
         version: 1.63.0
@@ -250,9 +253,15 @@ importers:
 
   packages/jobs:
     dependencies:
+      '@funmary/core':
+        specifier: workspace:*
+        version: link:../core
       '@funmary/log':
         specifier: workspace:*
         version: link:../log
+      '@funmary/sources':
+        specifier: workspace:*
+        version: link:../sources
       croner:
         specifier: ^10.0.1
         version: 10.0.1

@@ -11,11 +11,14 @@ import { createAuthService, createGoogleOidcClient, type AuthService } from '@fu
 import {
 	checkHealth,
 	createAuthStore,
+	createClassChangeStore,
+	createSourceHealthStore,
 	createJobRunStore,
 	openDatabase,
 	type AuthStore,
 } from '@funmary/db';
-import { createJobRunner } from '@funmary/jobs';
+import { createJobRunner, createScrapePortalJob, type JobDefinition } from '@funmary/jobs';
+import { fetchPortalPage } from '@funmary/sources';
 import { createAdminAlerter } from '@funmary/notify';
 import { createLogger, type Logger } from '@funmary/log';
 import { parseConfig } from '$lib/server/config.ts';
@@ -79,8 +82,34 @@ export const init: ServerInit = () => {
 		dryRun: result.config.notifyDryRun,
 		log: logger,
 	});
+	const jobs: JobDefinition[] = [];
+	const portal = result.config.portal;
+	const heartbeatUrl = result.config.heartbeatUrl;
+	if (portal) {
+		const healthStore = createSourceHealthStore(database);
+		const changeStore = createClassChangeStore(database);
+		jobs.push(
+			createScrapePortalJob({
+				fetchPage: (lastAttemptAt) =>
+					fetchPortalPage({
+						fetch: (url, init) => fetch(url, init),
+						credentials: portal,
+						lastAttemptAt,
+						now: new Date(),
+					}),
+				disabledSources: result.config.sourcesDisabled,
+				health: healthStore,
+				changes: changeStore,
+				alert: (alert) => alerter.send(alert),
+				// 取得のたびに、監視サービスに知らせる。決まった時刻に届かなければ、監視サービスが知らせる
+				...(heartbeatUrl && {
+					heartbeat: () => fetch(heartbeatUrl, { signal: AbortSignal.timeout(10_000) }),
+				}),
+			}),
+		);
+	}
 	const runner = createJobRunner({
-		jobs: [],
+		jobs,
 		store: jobRunStore,
 		log: logger,
 		// 失敗したら、管理者に知らせる。同じタスクの失敗は、1 時間に 1 回までにまとまる

@@ -1,3 +1,4 @@
+export { PORTAL_SOURCE, createScrapePortalJob, type ScrapePortalDeps } from './scrape-portal.ts';
 export {
 	createJobRunner,
 	type JobContext,

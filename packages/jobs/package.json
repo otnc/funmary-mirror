@@ -8,7 +8,9 @@
 		".": "./src/index.ts"
 	},
 	"dependencies": {
+		"@funmary/core": "workspace:*",
 		"@funmary/log": "workspace:*",
+		"@funmary/sources": "workspace:*",
 		"croner": "^10.0.1"
 	}
 }
