@@ -21,6 +21,7 @@ import {
 import {
 	createImportSyllabusJob,
 	createJobRunner,
+	createRemindTimetableImportJob,
 	createScrapePortalJob,
 	type JobDefinition,
 } from '@funmary/jobs';
@@ -106,6 +107,8 @@ export const init: ServerInit = () => {
 			alert: (alert) => alerter.send(alert),
 		}),
 	);
+	// 授業時間割の PDF を取り込む時期 (3 月 31 日と 8 月 31 日) を、管理用の Discord に知らせる
+	jobs.push(createRemindTimetableImportJob({ alert: (alert) => alerter.send(alert) }));
 	const portal = result.config.portal;
 	const heartbeatUrl = result.config.heartbeatUrl;
 	if (portal) {
