@@ -2,13 +2,21 @@
 # リリースを取得して切り替える。root で動かす (設計書 20.6)。
 # 使い方: update.sh <版>。版は build-<hash> か v<数字>.<数字>.<数字>。
 # 終了コード: 0 = 成功か変化なし、1 = 失敗 (切り戻した)、2 = 使い方の誤り
+#
+# FUNMARY_ で始まる変数は、deploy/tests/update.test.sh が、本物の VPS を使わずに動きを確かめるためのもの。
+# 本番では、どれも設定しない (sudo が環境変数を捨てるので、SSH の鍵を持つ人が設定することもできない)。
 set -euo pipefail
 
 REPO="${FUNMARY_REPO:-oto-lab/funmary}"
-BASE=/opt/funmary
-ENV_FILE=/etc/funmary/funmary.env
+DOWNLOAD_BASE="${FUNMARY_DOWNLOAD_BASE:-https://github.com/$REPO/releases/download}"
+BASE="${FUNMARY_BASE:-/opt/funmary}"
+ENV_FILE="${FUNMARY_ENV_FILE:-/etc/funmary/funmary.env}"
+BIN_DIR="${FUNMARY_BIN_DIR:-/usr/local/bin}"
+SBIN_DIR="${FUNMARY_SBIN_DIR:-/usr/local/sbin}"
+LOCK_FILE="${FUNMARY_LOCK_FILE:-/run/funmary-update.lock}"
+NPM="${FUNMARY_NPM:-/usr/bin/npm}"
 KEEP=3
-HEALTH_TIMEOUT=30
+HEALTH_TIMEOUT="${FUNMARY_HEALTH_TIMEOUT:-30}"
 
 version="${1:-}"
 if ! [[ "$version" =~ ^(build-[0-9a-f]{7,40}|v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?)$ ]]; then
@@ -17,12 +25,13 @@ if ! [[ "$version" =~ ^(build-[0-9a-f]{7,40}|v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z
 fi
 
 # 同時に 2 つ動かさない
-exec 9>/run/funmary-update.lock
+exec 9>"$LOCK_FILE"
 flock -n 9 || { echo "別の反映が動いています" >&2; exit 1; }
 
-# 環境変数ファイルから 1 つの値を読む (source しないので、中身は実行されない)
+# 環境変数ファイルから 1 つの値を読む (source しないので、中身は実行されない)。
+# ファイルが読めなくても、空を返して続ける (set -e と pipefail で、ここで止まらないように)
 env_value() {
-  sed -n "s/^$1=//p" "$ENV_FILE" 2>/dev/null | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/'
+  { sed -n "s/^$1=//p" "$ENV_FILE" 2>/dev/null || true; } | tail -n 1 | sed -e 's/^"\(.*\)"$/\1/'
 }
 
 # 管理用の Discord に知らせる。失敗しても反映は止めない。Webhook の URL は画面にもログにも出さない
@@ -36,8 +45,9 @@ notify() {
 
 port="$(env_value PORT)"
 port="${port:-28461}"
+HEALTH_URL="${FUNMARY_HEALTH_URL:-http://127.0.0.1:${port}/healthz}"
 healthy() {
-  curl -fsS --max-time 3 "http://127.0.0.1:${port}/healthz" >/dev/null 2>&1
+  curl -fsS --max-time 3 "$HEALTH_URL" >/dev/null 2>&1
 }
 
 tmp="$(mktemp -d)"
@@ -45,7 +55,7 @@ trap 'rm -rf "$tmp"' EXIT
 
 release_dir="$BASE/releases/$version"
 if [ ! -d "$release_dir" ]; then
-  url="https://github.com/$REPO/releases/download/$version"
+  url="$DOWNLOAD_BASE/$version"
   echo "$version を取得します"
   curl -fsSL --retry 3 -o "$tmp/funmary.tar.gz" "$url/funmary-$version.tar.gz"
   curl -fsSL --retry 3 -o "$tmp/funmary.tar.gz.sha256" "$url/funmary-$version.tar.gz.sha256"
@@ -53,7 +63,8 @@ if [ ! -d "$release_dir" ]; then
 
   # チェックサムのファイル名を、保存した名前に合わせて確かめる
   expected="$(cut -d' ' -f1 "$tmp/funmary.tar.gz.sha256")"
-  echo "$expected  $tmp/funmary.tar.gz" | sha256sum -c --quiet -
+  echo "$expected  $tmp/funmary.tar.gz" | sha256sum -c --quiet - \
+    || { echo "チェックサムが合いません。取得したファイルを使いません" >&2; exit 1; }
 
   mkdir -p "$tmp/extract"
   tar -xzf "$tmp/funmary.tar.gz" -C "$tmp/extract"
@@ -62,8 +73,9 @@ if [ ! -d "$release_dir" ]; then
   cp "$tmp/build-hash.txt" "$staged/.build-hash"
 
   # better-sqlite3 を入れる (ビルド済みのファイルを取得する)。失敗したら、途中の状態を残さない
-  (cd "$staged" && /usr/bin/npm install --omit=dev --no-audit --no-fund --loglevel=error)
-  chown -R root:root "$staged"
+  (cd "$staged" && "$NPM" install --omit=dev --no-audit --no-fund --loglevel=error)
+  # アプリ自身が自分のコードを書き換えられないように、root の持ち物にする (root で動かしているときだけ)
+  if [ "$(id -u)" -eq 0 ]; then chown -R root:root "$staged"; fi
   chmod -R go-w "$staged"
   mkdir -p "$BASE/releases"
   mv "$staged" "$release_dir.new"
@@ -71,9 +83,9 @@ if [ ! -d "$release_dir" ]; then
 fi
 
 # 管理用コマンドと、反映の入口を、この版のものに置き換える。install は新しいファイルに差し替えるので、動いていても安全
-install -m 755 "$release_dir/deploy/funmary-admin" /usr/local/bin/funmary-admin
-install -d -m 755 /usr/local/sbin
-install -m 755 "$release_dir/deploy/funmary-update" /usr/local/sbin/funmary-update
+install -d -m 755 "$BIN_DIR" "$SBIN_DIR"
+install -m 755 "$release_dir/deploy/funmary-admin" "$BIN_DIR/funmary-admin"
+install -m 755 "$release_dir/deploy/funmary-update" "$SBIN_DIR/funmary-update"
 
 # unit がまだなければ初回。展開と、上の配置だけで終える (systemd の登録は手で行う)
 if ! systemctl cat funmary.service >/dev/null 2>&1; then

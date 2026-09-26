@@ -1,7 +1,7 @@
 // サーバーの起動と、リクエストの振り分け (設計書 3.2)。
 // 起動時に設定を検証して DB を開き、機械向けのパスだけを Hono に渡す。
-import { existsSync, mkdirSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { mkdirSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 import { dev } from '$app/environment';
@@ -12,6 +12,7 @@ import { createJobRunner } from '@funmary/jobs';
 import { createAdminAlerter } from '@funmary/notify';
 import { createLogger, type Logger } from '@funmary/log';
 import { parseConfig } from '$lib/server/config.ts';
+import { findMigrationsFolder } from '$lib/server/migrations-path.ts';
 
 /** Hono に渡すパス。これ自身か、この下のパスが対象になる */
 const API_PATHS = ['/api', '/auth', '/cal', '/feed', '/healthz', '/mcp'];
@@ -47,11 +48,11 @@ export const init: ServerInit = () => {
 	const dataDir = dev ? resolve(REPO_ROOT, result.config.dataDir) : result.config.dataDir;
 	mkdirSync(dataDir, { recursive: true });
 	// 開くときに、壊れていないかの確認とマイグレーションまで行う。
-	// ビルドしたものでは、scripts/copy-migrations.ts がサーバーの出力の隣に写したマイグレーションを使う
-	const bundledMigrations = fileURLToPath(new URL('../migrations', import.meta.url));
+	// ビルドしたものでは、scripts/copy-migrations.ts がサーバーの出力に写したマイグレーションを、上の階層へたどって探す
+	const bundledMigrations = findMigrationsFolder(dirname(fileURLToPath(import.meta.url)));
 	const database = openDatabase(join(dataDir, 'funmary.db'), {
 		backupDir: join(dataDir, 'backups'),
-		...(existsSync(bundledMigrations) && { migrationsFolder: bundledMigrations }),
+		...(bundledMigrations && { migrationsFolder: bundledMigrations }),
 	});
 	// 起動したときに、前回の途中で止まって "running" のまま残った記録を閉じ、古い記録を消す
 	const jobRunStore = createJobRunStore(database);

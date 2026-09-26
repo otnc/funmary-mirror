@@ -27,6 +27,16 @@ jobs:
       - run: pnpm typecheck:ts6
       - run: pnpm test
       - run: pnpm build
+      # VPS への反映のスクリプトは、実機でしか動かせないので、偽の systemctl と npm で動きを確かめる
+      - name: 反映のスクリプトの検査
+        run: |
+          shellcheck deploy/update.sh deploy/funmary-update deploy/funmary-admin deploy/tests/deploy.test.sh
+          bash deploy/tests/deploy.test.sh
+      # 環境変数ファイルの空の値 (HOST= など) のままでも、本番と同じ入口で起動できるかを確かめる
+      - name: リリースの起動の確認
+        run: |
+          pnpm package-release build-0000000
+          node scripts/smoke-release.ts build-0000000
 
   e2e:
     name: E2E テスト

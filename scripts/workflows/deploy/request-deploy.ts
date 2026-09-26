@@ -51,6 +51,12 @@ if (import.meta.main) {
 				],
 				{ stdio: 'inherit' },
 			);
+		} catch (error) {
+			console.error(
+				'VPS への反映に失敗しました。次を確かめてください: (1) VPS に /usr/local/sbin/funmary-update があるか (最初の配置がまだだと、sudo: command not found になる)、' +
+					'(2) funmary-deploy の authorized_keys の command= と sudoers の設定、(3) DEPLOY_KNOWN_HOSTS が VPS のホストの公開鍵と合っているか',
+			);
+			throw error;
 		} finally {
 			rmSync(keyFile, { force: true });
 		}
