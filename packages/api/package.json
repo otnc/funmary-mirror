@@ -8,6 +8,10 @@
 		".": "./src/index.ts"
 	},
 	"dependencies": {
+		"@funmary/auth": "workspace:*",
 		"hono": "^4.13.9"
+	},
+	"devDependencies": {
+		"@funmary/db": "workspace:*"
 	}
 }

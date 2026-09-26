@@ -20,3 +20,4 @@ export {
 	type OidcClient,
 } from './service.ts';
 export { GOOGLE_ISSUER, createGoogleOidcClient, type OidcOptions } from './oidc.ts';
+export { openFlow, sealFlow } from './flow-cookie.ts';

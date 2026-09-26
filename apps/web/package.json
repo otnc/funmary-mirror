@@ -15,6 +15,7 @@
 	},
 	"devDependencies": {
 		"@funmary/api": "workspace:*",
+		"@funmary/auth": "workspace:*",
 		"@funmary/core": "workspace:*",
 		"@funmary/db": "workspace:*",
 		"@funmary/jobs": "workspace:*",

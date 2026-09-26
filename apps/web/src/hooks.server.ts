@@ -6,8 +6,15 @@ import { fileURLToPath } from 'node:url';
 import type { Handle, ServerInit } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/private';
-import { createApi } from '@funmary/api';
-import { checkHealth, createJobRunStore, openDatabase } from '@funmary/db';
+import { createApi, SESSION_COOKIE_MAX_AGE_S, sessionCookieName } from '@funmary/api';
+import { createAuthService, createGoogleOidcClient, type AuthService } from '@funmary/auth';
+import {
+	checkHealth,
+	createAuthStore,
+	createJobRunStore,
+	openDatabase,
+	type AuthStore,
+} from '@funmary/db';
 import { createJobRunner } from '@funmary/jobs';
 import { createAdminAlerter } from '@funmary/notify';
 import { createLogger, type Logger } from '@funmary/log';
@@ -15,7 +22,10 @@ import { parseConfig } from '$lib/server/config.ts';
 import { findMigrationsFolder } from '$lib/server/migrations-path.ts';
 
 /** Hono に渡すパス。これ自身か、この下のパスが対象になる */
-const API_PATHS = ['/api', '/auth', '/cal', '/feed', '/healthz', '/mcp'];
+const API_PATHS = ['/api', '/auth', '/cal', '/feed', '/healthz', '/mcp', '/signup'];
+
+/** ログイン用の Google の OAuth クライアントを、開発サーバーで試すときの公開 URL */
+const DEV_ORIGIN = 'http://localhost:5173';
 
 /** 定期処理の実行記録を残す期間 */
 const JOB_RUN_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
@@ -27,6 +37,8 @@ const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url));
 
 let api: ReturnType<typeof createApi> | undefined;
 let logger: Logger | undefined;
+let authStore: AuthStore | undefined;
+let publicOrigin = DEV_ORIGIN;
 
 export const init: ServerInit = () => {
 	const result = parseConfig(env);
@@ -95,13 +107,51 @@ export const init: ServerInit = () => {
 		database.close();
 	});
 
-	api = createApi({ checkHealth: () => checkHealth(database) });
+	publicOrigin = result.config.origin ?? DEV_ORIGIN;
+	const store = createAuthStore(database);
+	authStore = store;
+	const authService: AuthService = createAuthService({
+		oidc: createGoogleOidcClient({
+			clientId: result.config.google.clientId,
+			clientSecret: result.config.google.clientSecret,
+			redirectUri: `${publicOrigin}/auth/google/callback`,
+			hostedDomain: result.config.allowedEmailDomains[0] ?? 'fun.ac.jp',
+		}),
+		store,
+		allowedDomains: result.config.allowedEmailDomains,
+		registration: result.config.registration,
+		adminEmails: result.config.adminEmails,
+	});
+	api = createApi({
+		checkHealth: () => checkHealth(database),
+		auth: {
+			service: authService,
+			deleteSession: (token) => store.deleteSession(token),
+			flowKey: Buffer.from(result.config.encryptionKey, 'base64'),
+			origin: publicOrigin,
+		},
+	});
 	logger.withTag('app').info(`起動しました (${result.config.mode}、DB は ${dataDir})`);
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const path = event.url.pathname;
 	const started = performance.now();
+	event.locals.user = null;
+	const sessionToken = event.cookies.get(sessionCookieName(publicOrigin));
+	if (authStore && sessionToken) {
+		// 使うたびに DB の有効期限が延びるので、Cookie の期限も延ばす
+		event.locals.user = authStore.resolveSession(sessionToken, new Date());
+		if (event.locals.user) {
+			event.cookies.set(sessionCookieName(publicOrigin), sessionToken, {
+				httpOnly: true,
+				sameSite: 'lax',
+				secure: publicOrigin.startsWith('https://'),
+				path: '/',
+				maxAge: SESSION_COOKIE_MAX_AGE_S,
+			});
+		}
+	}
 	const response =
 		api && API_PATHS.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))
 			? await api.fetch(event.request)
