@@ -47,3 +47,10 @@ export {
 	type ScrapedChange,
 	type TrackedChange,
 } from './change-detection.ts';
+export {
+	SIMILARITY_MARGIN,
+	SIMILARITY_THRESHOLD,
+	matchLessonName,
+	type MatchResult,
+	type SubjectName,
+} from './lesson-matching.ts';

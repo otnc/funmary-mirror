@@ -21,3 +21,9 @@ export {
 } from './holidays/parse.ts';
 export { estimateHolidays } from './holidays/estimate.ts';
 export { bundledHolidays } from './holidays/bundled.ts';
+export {
+	PORTAL_MIN_INTERVAL_MS,
+	clampPortalInterval,
+	portalAttemptAllowed,
+	type AttemptDecision,
+} from './portal/throttle.ts';
