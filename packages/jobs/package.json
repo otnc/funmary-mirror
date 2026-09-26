@@ -1,0 +1,14 @@
+{
+	"name": "@funmary/jobs",
+	"private": true,
+	"type": "module",
+	"description": "定期処理の実行の仕組み",
+	"license": "(BSD-3-Clause OR Apache-2.0)",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"dependencies": {
+		"@funmary/log": "workspace:*",
+		"croner": "^10.0.1"
+	}
+}
