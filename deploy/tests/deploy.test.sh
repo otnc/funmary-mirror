@@ -193,6 +193,8 @@ rm -f "$work/received"
 SSH_ORIGINAL_COMMAND=build-def5678 bash -c 'env -u SSH_ORIGINAL_COMMAND sh "$0"; :' "$deploy_dir/funmary-update" >/dev/null 2>&1
 check "sudo が環境変数を捨てても、親のプロセスから受け取る" equals "$(cat "$work/received" 2>/dev/null)" build-def5678
 
+# $(id) は、展開させずに、文字のまま渡す (コマンド置換を仕込まれても実行されないことの確認)
+# shellcheck disable=SC2016
 for bad in "" "latest" "build-abc" "build-abc1234; rm -rf /" 'build-abc1234$(id)' "build-abc1234 extra" "v1.2" "../build-abc1234" $'build-abc1234\nid'; do
   rm -f "$work/received"
   SSH_ORIGINAL_COMMAND="$bad" run_update >/dev/null 2>&1
