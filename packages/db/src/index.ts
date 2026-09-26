@@ -21,3 +21,8 @@ export {
 	type HolidayStore,
 	type StoredHolidaySource,
 } from './holiday-store.ts';
+export {
+	createAcademicCalendarStore,
+	type AcademicCalendarStore,
+	type StoredSource,
+} from './academic-calendar-store.ts';

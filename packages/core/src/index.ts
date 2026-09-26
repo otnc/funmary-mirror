@@ -1,4 +1,11 @@
-export type { CalendarDate, Weekday } from './calendar-date.ts';
+export { addDays, type CalendarDate, type Weekday } from './calendar-date.ts';
+export {
+	estimateAcademicTerms,
+	resolveAcademicTerms,
+	type ResolvedTerm,
+	type StoredTerm,
+	type TermSource,
+} from './academic-terms.ts';
 export { DEFAULT_PERIODS, findPeriod, type Period } from './periods.ts';
 export {
 	INITIAL_SOURCE_HEALTH,
