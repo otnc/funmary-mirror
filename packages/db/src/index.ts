@@ -16,3 +16,8 @@ export {
 	hashToken,
 	type SecretBox,
 } from './secrets.ts';
+export {
+	createHolidayStore,
+	type HolidayStore,
+	type StoredHolidaySource,
+} from './holiday-store.ts';
