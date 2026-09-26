@@ -36,34 +36,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: tar.gz とチェックサムを作る
-        run: |
-          version="build-${HEAD_SHA:0:7}"
-          echo "VERSION=$version" >> "$GITHUB_ENV"
-          pnpm package-release "$version"
-      - name: GitHub Releases に置く
+      - name: tar.gz を作り、GitHub Releases に置く
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          # 同じ版を作り直したときは、置き換える
-          gh release delete "$VERSION" --cleanup-tag --yes || true
-          gh release create "$VERSION" \
-            --target "$HEAD_SHA" \
-            --title "$VERSION" \
-            --notes "main の $HEAD_SHA から自動で作ったリリースです。" \
-            --prerelease \
-            "release/funmary-$VERSION.tar.gz" \
-            "release/funmary-$VERSION.tar.gz.sha256" \
-            release/build-hash.txt \
-            release/THIRD_PARTY_LICENSES.txt
+        run: node scripts/workflows/release/publish-release.ts
       - name: 古い自動リリースを消す
         env:
           GH_TOKEN: ${{ github.token }}
           KEEP: '10'
-        run: |
-          # build- で始まる自動のリリースだけを対象にし、新しいものから KEEP 個を残す。v で始まる正式なリリースには触れない
-          gh release list --limit 200 --json tagName,createdAt \
-            --jq "map(select(.tagName | startswith(\"build-\"))) | sort_by(.createdAt) | reverse | .[$KEEP:] | .[].tagName" |
-            while read -r tag; do
-              gh release delete "$tag" --cleanup-tag --yes
-            done
+        run: node scripts/workflows/release/prune-releases.ts

@@ -116,6 +116,7 @@ chore(deps): 依存を更新: svelte → ^5.58.0
 - 秘密情報 (パスワード、トークン、Webhook の URL) と個人情報は、コード、テストのデータ、ログに入れません。テストに使う HTML は、実名と学籍番号を伏せてから入れます。
 - README などで本番のドメインを書かず、`funmary.example.com` と書きます。CI が検査します。
 - ほかのプロジェクトのコードをコピーしません。
+- GitHub Actions のワークフロー (`.github/workflows/`) に、数行を超えるシェルのスクリプトを直接書きません。TypeScript にして `scripts/workflows/<ワークフローのファイル名>/<処理の名前>.ts` に置き、`node scripts/workflows/...` で呼びます。判断の部分は関数に分けて、隣に `*.test.ts` を置きます。
 
 用語の使い分けは [CONTEXT.md](CONTEXT.md) にまとめています。コードの名前もこれに合わせます。
 
