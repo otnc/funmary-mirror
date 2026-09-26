@@ -74,6 +74,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
       # gitleaks の GitHub Action は組織のリポジトリではライセンスキーが要るので、CLI を直接動かす
       - name: gitleaks
         run: >-
@@ -83,16 +86,7 @@ jobs:
       - name: 本番のドメインの混入検査
         env:
           PRODUCTION_DOMAIN: ${{ secrets.PRODUCTION_DOMAIN }}
-        run: |
-          if [ -z "$PRODUCTION_DOMAIN" ]; then
-            echo "PRODUCTION_DOMAIN がないので飛ばします (フォークからの PR など)"
-            exit 0
-          fi
-          if git grep -qiF -- "$PRODUCTION_DOMAIN"; then
-            echo "::error::本番のドメインが追跡中のファイルに含まれています。README などでは funmary.example.com と書いてください"
-            git grep -liF -- "$PRODUCTION_DOMAIN"
-            exit 1
-          fi
+        run: node scripts/workflows/ci/check-production-domain.ts
 
   commitlint:
     name: コミットメッセージの検査

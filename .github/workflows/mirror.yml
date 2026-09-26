@@ -26,20 +26,12 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
       - name: push
         env:
           MIRROR_SSH_KEY: ${{ secrets.MIRROR_SSH_KEY }}
           # GitHub の SSH のホスト鍵 (https://api.github.com/meta の ssh_keys)。接続先のすり替わりを防ぐため固定する
           GITHUB_HOST_KEY: github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
-        run: |
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$MIRROR_SSH_KEY" > ~/.ssh/mirror
-          chmod 600 ~/.ssh/mirror
-          printf '%s\n' "$GITHUB_HOST_KEY" > ~/.ssh/known_hosts
-          export GIT_SSH_COMMAND="ssh -i ~/.ssh/mirror -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
-          git remote add mirror git@github.com:otnc/funmary-mirror.git
-          git push --force mirror refs/remotes/origin/main:refs/heads/main
-          git push --force --tags mirror
-      - name: 鍵を消す
-        if: always()
-        run: rm -f ~/.ssh/mirror
+        run: node scripts/workflows/mirror/push-mirror.ts

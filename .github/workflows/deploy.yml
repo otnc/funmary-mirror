@@ -30,21 +30,12 @@ jobs:
       DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
       DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
     steps:
-      - name: 反映が止められていないか確かめる
-        run: |
-          if [ "$DEPLOY_ENABLED" = "false" ]; then
-            echo "DEPLOY_ENABLED が false なので、反映しません"
-            echo "SKIP=true" >> "$GITHUB_ENV"
-          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
       - name: VPS に反映を頼む
-        if: env.SKIP != 'true'
-        run: |
-          install -d -m 700 ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          # ホストの公開鍵を固定する。接続先がすり替わっていれば、接続しない
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          # この鍵で入ると、VPS 側が決めたコマンドだけが動く。ここで渡す版の名前は、VPS 側でも形を確かめる
-          ssh -i ~/.ssh/deploy_key \
-            -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes \
-            "funmary-deploy@$DEPLOY_HOST" "build-${HEAD_SHA:0:7}"
+        run: node scripts/workflows/deploy/request-deploy.ts
