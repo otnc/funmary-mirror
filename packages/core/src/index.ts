@@ -37,3 +37,13 @@ export {
 	type ResolvedHoliday,
 	type ResolveHolidaysInput,
 } from './holidays.ts';
+export {
+	SUSPICIOUS_MIN_PREVIOUS,
+	WITHDRAW_AFTER,
+	detectChanges,
+	type ChangeEvent,
+	type ChangeKind,
+	type DetectResult,
+	type ScrapedChange,
+	type TrackedChange,
+} from './change-detection.ts';
