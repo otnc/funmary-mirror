@@ -9,6 +9,7 @@ import { env } from '$env/dynamic/private';
 import { createApi } from '@funmary/api';
 import { checkHealth, createJobRunStore, openDatabase } from '@funmary/db';
 import { createJobRunner } from '@funmary/jobs';
+import { createAdminAlerter } from '@funmary/notify';
 import { createLogger, type Logger } from '@funmary/log';
 import { parseConfig } from '$lib/server/config.ts';
 
@@ -60,7 +61,26 @@ export const init: ServerInit = () => {
 	jobRunStore.prune(new Date(Date.now() - JOB_RUN_RETENTION_MS));
 
 	// 定期処理。個々の処理は、取得の実装ができたところで足す
-	const runner = createJobRunner({ jobs: [], store: jobRunStore, log: logger });
+	const alerter = createAdminAlerter({
+		webhookUrl: result.config.adminDiscordWebhookUrl,
+		dryRun: result.config.notifyDryRun,
+		log: logger,
+	});
+	const runner = createJobRunner({
+		jobs: [],
+		store: jobRunStore,
+		log: logger,
+		// 失敗したら、管理者に知らせる。同じタスクの失敗は、1 時間に 1 回までにまとまる
+		onFinish: async (job, outcome) => {
+			if (outcome.status !== 'failed') return;
+			await alerter.send({
+				severity: 'error',
+				title: `定期処理 ${job} が失敗しました`,
+				...(outcome.message && { message: outcome.message }),
+				key: `job:${job}`,
+			});
+		},
+	});
 	runner.start();
 
 	// adapter-node は、SIGTERM を受けるとこのイベントを出して、終わるのを待つ (待つ時間の上限は SHUTDOWN_TIMEOUT)。
