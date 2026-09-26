@@ -21,6 +21,7 @@
 		"@funmary/jobs": "workspace:*",
 		"@funmary/log": "workspace:*",
 		"@funmary/notify": "workspace:*",
+		"@funmary/sources": "workspace:*",
 		"@playwright/test": "catalog:",
 		"@sveltejs/adapter-node": "catalog:",
 		"@sveltejs/kit": "catalog:",
