@@ -13,7 +13,7 @@ if [ -z "$version" ]; then
   # sudo の親をたどって、SSH_ORIGINAL_COMMAND を持つプロセスを探す (root なので読める)
   pid="$PPID"
   for _ in 1 2 3 4 5; do
-    [ -n "$pid" ] && [ "$pid" -gt 1 ] 2>/dev/null || break
+    if [ -z "$pid" ] || ! [ "$pid" -gt 1 ] 2>/dev/null; then break; fi
     if [ -r "/proc/$pid/environ" ]; then
       found="$(tr '\0' '\n' < "/proc/$pid/environ" | sed -n 's/^SSH_ORIGINAL_COMMAND=//p' | head -n 1 || true)"
       if [ -n "$found" ]; then

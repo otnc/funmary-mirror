@@ -176,7 +176,7 @@ echo "funmary-update: 版の名前の受け取りと確認"
 printf '#!/bin/sh\nprintf "%%s\\n" "$@" > "%s"\n' "$work/received" > "$work/fake-update.sh"
 chmod +x "$work/fake-update.sh"
 export FUNMARY_UPDATE_SCRIPT="$work/fake-update.sh"
-run_update() { sh "$deploy_dir/funmary-update" "$@"; }
+run_update() { sh "$deploy_dir/funmary-update"; }
 
 rm -f "$work/received"
 SSH_ORIGINAL_COMMAND=build-abc1234 run_update >/dev/null 2>&1
@@ -188,7 +188,8 @@ check "最初の引数から受け取る" equals "$(cat "$work/received" 2>/dev/
 
 # sudo が環境変数を捨てた場合を再現する: 親のプロセスだけが SSH_ORIGINAL_COMMAND を持つ
 rm -f "$work/received"
-# (bash -c が最後のコマンドに置き換わらないよう、あとに : を付けて、子のプロセスにする)
+# (bash -c が最後のコマンドに置き換わらないよう、あとに : を付けて、子のプロセスにする。$0 は bash -c の中で展開する)
+# shellcheck disable=SC2016
 SSH_ORIGINAL_COMMAND=build-def5678 bash -c 'env -u SSH_ORIGINAL_COMMAND sh "$0"; :' "$deploy_dir/funmary-update" >/dev/null 2>&1
 check "sudo が環境変数を捨てても、親のプロセスから受け取る" equals "$(cat "$work/received" 2>/dev/null)" build-def5678
 
