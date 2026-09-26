@@ -1,0 +1,8 @@
+[Unit]
+Description=Funmary のバックアップ
+After=funmary.service
+
+[Service]
+Type=oneshot
+# 環境変数と実行するユーザーは、funmary-admin のラッパーが unit と同じ条件にそろえる
+ExecStart=/usr/local/bin/funmary-admin backup

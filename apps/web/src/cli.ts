@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineCommand, runMain } from 'citty';
-import { openDatabase } from '@funmary/db';
+import { backupDatabase, openDatabase, restoreDatabase } from '@funmary/db';
 import { parseConfig, type Config } from './lib/server/config.ts';
 import { fillSecrets, generateSecrets } from './lib/server/env-file.ts';
 
@@ -73,9 +73,47 @@ const migrate = defineCommand({
 	},
 });
 
+const backup = defineCommand({
+	meta: {
+		name: 'backup',
+		description: 'DB のバックアップを取る。古い日ごとのバックアップは 14 個まで残す',
+	},
+	run() {
+		const config = loadConfigOrExit();
+		const database = openDatabase(join(config.dataDir, 'funmary.db'), {
+			backupDir: join(config.dataDir, 'backups'),
+			...(existsSync(bundledMigrations) && { migrationsFolder: bundledMigrations }),
+		});
+		try {
+			const file = backupDatabase(database, join(config.dataDir, 'backups'), { now: new Date() });
+			console.log(`バックアップを作りました: ${file}`);
+		} finally {
+			database.close();
+		}
+	},
+});
+
+const restore = defineCommand({
+	meta: {
+		name: 'restore',
+		description: 'バックアップから DB を戻す。先に systemctl stop funmary でアプリを止めておく',
+	},
+	args: {
+		file: { type: 'positional', description: '戻すバックアップのファイル', required: true },
+	},
+	run({ args }) {
+		const config = loadConfigOrExit();
+		const kept = restoreDatabase(join(config.dataDir, 'funmary.db'), args.file, {
+			now: new Date(),
+		});
+		console.log(`戻しました。それまでの DB は ${kept} に残してあります。`);
+		console.log('systemctl start funmary でアプリを起動してください。');
+	},
+});
+
 const main = defineCommand({
 	meta: { name: 'funmary-admin', description: 'Funmary の管理用コマンド' },
-	subCommands: { init, migrate },
+	subCommands: { init, migrate, backup, restore },
 });
 
 await runMain(main);

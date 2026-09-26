@@ -1,3 +1,4 @@
+export { backupDatabase, restoreDatabase, type BackupOptions } from './backup.ts';
 export {
 	checkHealth,
 	DatabaseCorruptedError,
