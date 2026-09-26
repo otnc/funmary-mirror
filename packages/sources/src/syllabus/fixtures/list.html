@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="utf-8"><title>シラバス検索</title></head>
+<body>
+<form method="post" action="./SyllabusList?module=2" id="Form1">
+<input type="hidden" name="__EVENTTARGET" id="__EVENTTARGET" value="">
+<input type="hidden" name="__EVENTARGUMENT" id="__EVENTARGUMENT" value="">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="dummy-viewstate">
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="A1B2C3D4">
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="dummy-validation">
+<select size="1" name="ctl00$MainContent$param_Syllabus_year_eq" id="MainContent_param_Syllabus_year_eq">
+<option selected="selected" value="2026">2026</option>
+<option value="2025">2025</option>
+</select>
+<input name="ctl00$MainContent$param_lesson_name_like" type="text" id="MainContent_param_lesson_name_like">
+<input type="submit" name="ctl00$MainContent$SearchButton" value="検索の実行" id="MainContent_SearchButton">
+<h3 class="title is-3">検索結果(45)</h3>
+<table class="dgridview table is-fullwidth" id="MainContent_GridView">
+<tbody>
+<tr class="Pager is-hidden"><td colspan="8"><table><tbody><tr>
+<td><span>1</span></td><td><a href="javascript:__doPostBack('ctl00$MainContent$GridView','Page$2')">2</a></td><td><a href="javascript:__doPostBack('ctl00$MainContent$GridView','Page$3')">3</a></td>
+</tr></tbody></table></td></tr>
+<tr class=" dgridview_header">
+<th scope="col">&nbsp;</th><th scope="col"><a href="javascript:__doPostBack('ctl00$MainContent$GridView','Sort$year')">履修年度</a></th><th scope="col"><a href="javascript:__doPostBack('ctl00$MainContent$GridView','Sort$lesson_id')">授業コード</a></th><th scope="col"><a href="#">授業科目名</a></th><th scope="col"><a href="#">Course</a></th><th scope="col"><a href="#">担当教員名</a></th><th scope="col"><a href="#">授業形態</a></th><th scope="col"><a href="#">表示順</a></th>
+</tr>
+<tr>
+<td><a class="button is-link" href="Syllabus.aspx?lesson_id=900001&amp;year=2026&amp;from=SyllabusList.aspx" target="_blank">詳細</a></td><td class="disp" data-col-responsive-title="履修年度">2026</td><td class="disp" data-col-responsive-title="授業コード">900001</td><td class="disp" data-col-responsive-title="授業科目名">架空の科目入門1～4</td><td class="disp" data-col-responsive-title="Course">Introduction to Sample</td><td class="disp" data-col-responsive-title="担当教員名">架空　太郎</td><td class="disp" data-col-responsive-title="授業形態">講義</td><td class="disp" data-col-responsive-title="表示順">0</td>
+</tr>
+<tr>
+<td><a class="button is-link" href="Syllabus.aspx?lesson_id=900002&amp;year=2026&amp;from=SyllabusList.aspx" target="_blank">詳細</a></td><td class="disp" data-col-responsive-title="履修年度">2026</td><td class="disp" data-col-responsive-title="授業コード">900002</td><td class="disp" data-col-responsive-title="授業科目名">架空の集中講義　夏期集中</td><td class="disp" data-col-responsive-title="Course">Sample Intensive</td><td class="disp" data-col-responsive-title="担当教員名">架空　花子</td><td class="disp" data-col-responsive-title="授業形態">集中講義</td><td class="disp" data-col-responsive-title="表示順">0</td>
+</tr>
+<tr class="Pager is-hidden"><td colspan="8"><table><tbody><tr>
+<td><span>1</span></td><td><a href="javascript:__doPostBack('ctl00$MainContent$GridView','Page$2')">2</a></td>
+</tr></tbody></table></td></tr>
+</tbody></table>
+</form>
+</body></html>

@@ -40,3 +40,13 @@ export {
 	type LoginForm,
 	type LoginFormResult,
 } from './portal/login-form.ts';
+export {
+	parseSyllabusDetail,
+	type SyllabusDetail,
+	type SyllabusDetailResult,
+} from './syllabus/detail.ts';
+export {
+	parseSyllabusList,
+	type SyllabusListResult,
+	type SyllabusListRow,
+} from './syllabus/list.ts';
