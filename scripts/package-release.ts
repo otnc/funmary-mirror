@@ -30,7 +30,8 @@ cpSync(join(webDir, 'dist/cli.js'), join(stage, 'cli.js'));
 // cli.js が自分の隣から探す
 cpSync(join(root, 'packages/db/migrations'), join(stage, 'migrations'), { recursive: true });
 cpSync(join(root, 'deploy'), join(stage, 'deploy'), { recursive: true });
-writeFileSync(join(stage, 'server.js'), "import './build/index.js';\n");
+// 本番の入口。環境変数を整えてから、build/ の adapter-node の入口を読み込む
+cpSync(join(webDir, 'dist/server.js'), join(stage, 'server.js'));
 
 // 本番の依存は better-sqlite3 だけ。版は apps/web/package.json (catalog を解決したもの) に合わせる
 const webPackage = JSON.parse(readFileSync(join(webDir, 'package.json'), 'utf8')) as {

@@ -1,9 +1,30 @@
 #!/bin/sh
 # 反映用の鍵で SSH に入ったときに、sudo 経由で呼ばれる入口。
 # authorized_keys の command= で必ずここに来る。SSH で渡された版の名前を確かめてから update.sh に渡す。
+#
+# 版の名前は、SSH が環境変数 SSH_ORIGINAL_COMMAND に入れる。ただし sudo は環境変数を捨てる (env_reset) ので、
+# 次の順に探す: 環境変数、最初の引数、親のプロセス (sudo や sh) の環境変数。
+# どの経路でも、最後に必ず形を確かめる。
 set -eu
 
-version="${SSH_ORIGINAL_COMMAND:-}"
+version="${SSH_ORIGINAL_COMMAND:-${1:-}}"
+
+if [ -z "$version" ]; then
+  # sudo の親をたどって、SSH_ORIGINAL_COMMAND を持つプロセスを探す (root なので読める)
+  pid="$PPID"
+  for _ in 1 2 3 4 5; do
+    [ -n "$pid" ] && [ "$pid" -gt 1 ] 2>/dev/null || break
+    if [ -r "/proc/$pid/environ" ]; then
+      found="$(tr '\0' '\n' < "/proc/$pid/environ" | sed -n 's/^SSH_ORIGINAL_COMMAND=//p' | head -n 1 || true)"
+      if [ -n "$found" ]; then
+        version="$found"
+        break
+      fi
+    fi
+    pid="$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d ' ' || true)"
+  done
+fi
+
 case "$version" in
   build-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) ;;
   v[0-9]*.[0-9]*.[0-9]*) ;;
@@ -12,10 +33,13 @@ case "$version" in
     exit 2
     ;;
 esac
-# 上の case は前方一致なので、使ってよい文字だけかを改めて確かめる
-if printf '%s' "$version" | grep -Eq '[^0-9A-Za-z.+-]'; then
-  echo "版の名前に使えない文字があります" >&2
-  exit 2
-fi
+# 上の case は前方一致なので、使ってよい文字だけかを、全体 (改行を含む) で改めて確かめる
+case "$version" in
+  *[!0-9A-Za-z.+-]*)
+    echo "版の名前に使えない文字があります" >&2
+    exit 2
+    ;;
+esac
 
-exec /opt/funmary/current/deploy/update.sh "$version"
+# FUNMARY_UPDATE_SCRIPT は、テストが差し替えるためのもの。sudo が環境変数を捨てるので、本番では設定されない
+exec "${FUNMARY_UPDATE_SCRIPT:-/opt/funmary/current/deploy/update.sh}" "$version"
