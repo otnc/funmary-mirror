@@ -33,3 +33,12 @@ export {
 	type JobRunStore as StoredJobRunStore,
 	type StoredJobRun,
 } from './job-run-store.ts';
+export {
+	SESSION_TTL_MS,
+	createAuthStore,
+	type AuthStore,
+	type AuthUser,
+	type InviteCodeRecord,
+	type NewUser,
+	type RegisterResult,
+} from './auth-store.ts';
